@@ -62,8 +62,14 @@ curl -H "X-API-Key: your-api-key" "http://localhost:8080/v1/monitoring/stats/fil
 # Filtrowanie po metodzie i limit
 curl -u admin:password "http://localhost:8080/v1/monitoring/stats/filtered?method=POST&limit=10"
 
+# Filtrowanie po hash tokena RapidAPI
+curl -H "X-API-Key: your-api-key" "http://localhost:8080/v1/monitoring/stats/filtered?token_hash=1f12e4b5"
+
 # Kombinacja filtrów
 curl -u admin:password "http://localhost:8080/v1/monitoring/stats/filtered?endpoint=/v1/validate/nip&source=rapidapi&limit=5"
+
+# Używając API Key jako query parameter
+curl "http://localhost:8080/v1/monitoring/stats/filtered?api_key=your-api-key&source=rapidapi&limit=3"
 ```
 
 **Response:**
