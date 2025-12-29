@@ -98,33 +98,87 @@ Możesz zweryfikować specyfikację używając:
 
 ### 3.2 Dodanie nowego API
 
-1. Kliknij przycisk **"Add New API"** lub **"Create API"**
-2. Wybierz opcję **"Import API from OpenAPI"** lub **"Add Endpoints using OpenAPI"**
+1. Kliknij przycisk **"Add New API"** lub **"Add New App"** w lewym menu
+2. Zostaniesz przekierowany do formularza **"Add New App"**
 
-### 3.3 Importowanie OpenAPI Spec
+### 3.3 Wypełnienie podstawowych informacji
 
-**Opcja A: Upload pliku**
-1. Kliknij **"Upload File"**
+W formularzu uzupełnij sekcję **"Describe your App"**:
+
+1. **App Name:** (wymagane)
+   - Wpisz: `PL Validator API`
+   - To pole jest już widoczne w formularzu
+
+2. **Description:**
+   - Wpisz: `Validate and normalize Polish identifiers (NIP, REGON) and IBAN`
+   - Opcjonalnie możesz dodać więcej szczegółów
+
+3. **Thumbnail:** (opcjonalne)
+   - Możesz przesłać logo/ikona dla API
+   - Kliknij **"Select Image"** i wybierz plik graficzny
+
+### 3.4 Konfiguracja autoryzacji
+
+W sekcji **"Add initial authorization"**:
+
+1. **Authorization Name:** (opcjonalne)
+   - Możesz zostawić puste lub wpisać nazwę np. `Default`
+
+2. **Select gateways:**
+   - Zaznacz checkbox **"rapidapi.com (RapidAPI gateway)"**
+   - To jest zazwyczaj domyślnie zaznaczone
+
+3. **Authorization type:**
+   - Wybierz **"RapidAPI"** z dropdown (domyślnie wybrane)
+   - To oznacza, że API będzie używać standardowej autoryzacji RapidAPI przez klucz API
+   - Alternatywnie możesz wybrać:
+     - **"OAuth2"** - jeśli wymagasz OAuth2
+     - **"Header"** - dla custom headers
+     - **"Basic Auth"** - dla Basic Authentication
+
+**Dla publicznego API (jak to):**
+- Wybierz **"RapidAPI"** - użytkownicy będą musieli mieć RapidAPI subscription key
+- To pozwoli na śledzenie użycia i zarządzanie dostępu
+
+### 3.5 Zapisanie i przejście dalej
+
+1. Kliknij przycisk **"Create"** lub **"Save"** na dole formularza
+2. Po utworzeniu aplikacji, RapidAPI przeniesie Cię do dashboardu aplikacji
+
+### 3.6 Importowanie OpenAPI Spec (Dodawanie endpointów)
+
+Teraz musisz dodać endpointy do utworzonej aplikacji:
+
+**Opcja A: Przez interfejs aplikacji**
+1. W dashboardzie aplikacji znajdź sekcję **"Endpoints"** lub **"Add Endpoints"**
+2. Kliknij **"Import from OpenAPI"** lub **"Add Endpoints"**
+3. Wybierz jedną z opcji poniżej
+
+**Opcja B: Upload pliku**
+
+1. Kliknij **"Upload File"** lub **"Choose File"**
 2. Wybierz plik `openapi.yaml` z lokalnego komputera
-3. Kliknij **"Import"**
+3. Kliknij **"Import"** lub **"Upload"**
 
-**Opcja B: Wklejenie URL**
+**Opcja C: Wklejenie URL**
 1. Jeśli plik jest dostępny publicznie, wklej URL:
    ```
    https://raw.githubusercontent.com/twoj-username/pl-id-validator-api/main/openapi.yaml
    ```
 2. Kliknij **"Import"**
 
-**Opcja C: Wklejenie zawartości**
+**Opcja D: Wklejenie zawartości**
 1. Skopiuj zawartość pliku `openapi.yaml`
-2. Wklej do edytora
+2. Wklej do edytora tekstowego
 3. Kliknij **"Import"**
 
-### 3.4 Konfiguracja podstawowa
+**Uwaga:** Jeśli nie widzisz opcji importu OpenAPI bezpośrednio po utworzeniu aplikacji:
+- Przejdź do zakładki **"Endpoints"** w dashboardzie aplikacji
+- Tam powinieneś znaleźć opcję importu OpenAPI spec
 
-Po zaimportowaniu, uzupełnij:
-- **API Name:** `PL Validator API`
-- **Description:** `Validate and normalize Polish identifiers (NIP, REGON) and IBAN`
+### 3.7 Konfiguracja dodatkowa (po imporcie)
+
+Po zaimportowaniu endpointów, możesz uzupełnić dodatkowe informacje w ustawieniach aplikacji:
 - **Category:** `Business` lub `Developer Tools`
 - **Tags:** `poland`, `validation`, `nip`, `regon`, `iban`
 
