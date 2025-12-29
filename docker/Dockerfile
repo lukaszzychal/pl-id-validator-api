@@ -7,9 +7,10 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 
 # Copy composer files first (better layer cache)
-COPY composer.json /app/composer.json
+# Copy composer.lock if exists for reproducible builds
+COPY composer.json composer.lock* /app/
 
-RUN composer install --no-interaction --no-progress --prefer-dist
+RUN composer install --no-interaction --no-progress --prefer-dist --no-dev
 
 # Copy source
 COPY public /app/public

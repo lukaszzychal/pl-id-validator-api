@@ -6,6 +6,30 @@ info:
 servers:
   - url: https://YOUR_PUBLIC_HOST
 paths:
+  /:
+    get:
+      summary: API information
+      description: Returns information about the API including available endpoints
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: PL Validator API
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  description:
+                    type: string
+                  endpoints:
+                    type: object
+                    additionalProperties:
+                      type: string
   /v1/health:
     get:
       summary: Healthcheck

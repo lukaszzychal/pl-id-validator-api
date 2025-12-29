@@ -52,11 +52,22 @@ Server: http://localhost:8080
 composer test
 ```
 
+**📋 Dokumentacja testów:** Zobacz [TESTING.md](./TESTING.md) dla szczegółowej dokumentacji testów manualnych i automatycznych.
+
+## Documentation
+
+- **[TESTING.md](./TESTING.md)** - Kompletna dokumentacja testów dla QA
+- **[RAPIDAPI_DEPLOYMENT.md](./RAPIDAPI_DEPLOYMENT.md)** - Krok po kroku wdrożenie do RapidAPI
+
 ## OpenAPI (for RapidAPI)
 
 OpenAPI spec is in `openapi.yaml`.
 
 ### How to use it in RapidAPI quickly
+
+**📖 Pełna dokumentacja:** Zobacz [RAPIDAPI_DEPLOYMENT.md](./RAPIDAPI_DEPLOYMENT.md) dla szczegółowego przewodnika.
+
+Szybki start:
 1. Create a new API in RapidAPI (My APIs).
 2. Import an API / Add endpoints using OpenAPI.
 3. Paste content of `openapi.yaml` OR upload the file.
