@@ -12,7 +12,7 @@ System monitorowania pozwala śledzić:
 
 ### GET /v1/monitoring/stats
 
-Zwraca statystyki requestów:
+Zwraca podstawowe statystyki requestów (bez autoryzacji):
 
 ```json
 {
@@ -39,9 +39,53 @@ Zwraca statystyki requestów:
 }
 ```
 
+### GET /v1/monitoring/stats/filtered
+
+Zwraca przefiltrowane statystyki **z autoryzacją**. Wymaga autoryzacji przez Basic Auth lub API Key.
+
+**Query Parameters (filtry):**
+- `endpoint` - filtr po ścieżce endpointu (np. `/v1/validate/nip`)
+- `method` - filtr po metodzie HTTP (np. `POST`, `GET`)
+- `source` - filtr po źródle: `rapidapi` lub `direct`
+- `token_hash` - filtr po hash tokena RapidAPI (8 znaków)
+- `limit` - limit liczby wyników w każdej kategorii
+
+**Przykłady:**
+
+```bash
+# Filtrowanie po endpointzie
+curl -u admin:password "http://localhost:8080/v1/monitoring/stats/filtered?endpoint=/v1/validate/nip"
+
+# Filtrowanie po źródle (tylko RapidAPI)
+curl -H "X-API-Key: your-api-key" "http://localhost:8080/v1/monitoring/stats/filtered?source=rapidapi"
+
+# Filtrowanie po metodzie i limit
+curl -u admin:password "http://localhost:8080/v1/monitoring/stats/filtered?method=POST&limit=10"
+
+# Kombinacja filtrów
+curl -u admin:password "http://localhost:8080/v1/monitoring/stats/filtered?endpoint=/v1/validate/nip&source=rapidapi&limit=5"
+```
+
+**Response:**
+```json
+{
+  "filters_applied": {
+    "endpoint": "/v1/validate/nip",
+    "source": "rapidapi",
+    "limit": 5
+  },
+  "statistics": {
+    "total_requests": 5,
+    "rapidapi_requests": 5,
+    "direct_requests": 0,
+    ...
+  }
+}
+```
+
 ### POST /v1/monitoring/reset
 
-Resetuje wszystkie statystyki:
+Resetuje wszystkie statystyki (wymaga autoryzacji):
 
 ```json
 {
@@ -50,25 +94,56 @@ Resetuje wszystkie statystyki:
 }
 ```
 
+## Autoryzacja
+
+Endpointy `/v1/monitoring/stats/filtered` i `/v1/monitoring/reset` wymagają autoryzacji.
+
+### Metody autoryzacji
+
+1. **Basic Authentication** (HTTP Basic Auth)
+   ```bash
+   curl -u username:password http://localhost:8080/v1/monitoring/stats/filtered
+   ```
+
+2. **API Key** (Header lub query parameter)
+   ```bash
+   # Przez header
+   curl -H "X-API-Key: your-api-key" http://localhost:8080/v1/monitoring/stats/filtered
+   
+   # Przez query parameter
+   curl "http://localhost:8080/v1/monitoring/stats/filtered?api_key=your-api-key"
+   ```
+
+### Konfiguracja
+
+Ustaw zmienne środowiskowe:
+
+```bash
+# Basic Auth
+export MONITORING_USERNAME=admin
+export MONITORING_PASSWORD=your-secure-password
+
+# Lub API Key
+export MONITORING_API_KEY=your-secure-api-key
+
+# Można użyć obu jednocześnie
+```
+
+**W Railway:**
+```bash
+railway variables set MONITORING_USERNAME=admin
+railway variables set MONITORING_PASSWORD=secure-password-123
+railway variables set MONITORING_API_KEY=secure-api-key-456
+```
+
+**Uwaga:** Jeśli żadna zmienna nie jest ustawiona, endpointy są dostępne bez autoryzacji (tryb deweloperski).
+
 ## Wykrywanie requestów RapidAPI
 
 Request jest identyfikowany jako pochodzący z RapidAPI jeśli:
 1. Zawiera header `X-RapidAPI-Host` LUB
 2. Zawiera header `X-RapidAPI-Key` LUB  
 3. Zawiera header `X-RapidAPI-Proxy-Secret` który pasuje do `RAPIDAPI_PROXY_SECRET` (jeśli skonfigurowany)
-
-## Konfiguracja
-
-### Zmienne środowiskowe
-
-- `RAPIDAPI_PROXY_SECRET` - opcjonalny secret do weryfikacji requestów z RapidAPI (jeśli ustawiony, wymagany dla każdego requestu RapidAPI)
-
-### Przykład użycia
-
-```bash
-# Ustawienie secret w Railway
-railway variables set RAPIDAPI_PROXY_SECRET=your-secret-here
-```
 
 ## Hooks dla RapidAPI
 
@@ -117,16 +192,26 @@ RequestMonitor::addRapidApiHook(function ($request, $response, $context) {
 
 ## Przykłady
 
-### Pobranie statystyk
+### Pobranie podstawowych statystyk (bez autoryzacji)
 
 ```bash
 curl http://localhost:8080/v1/monitoring/stats
 ```
 
+### Pobranie przefiltrowanych statystyk (z autoryzacją)
+
+```bash
+# Basic Auth
+curl -u admin:password "http://localhost:8080/v1/monitoring/stats/filtered?source=rapidapi"
+
+# API Key
+curl -H "X-API-Key: your-key" "http://localhost:8080/v1/monitoring/stats/filtered?endpoint=/v1/validate/nip&limit=5"
+```
+
 ### Reset statystyk
 
 ```bash
-curl -X POST http://localhost:8080/v1/monitoring/reset
+curl -X POST -u admin:password http://localhost:8080/v1/monitoring/reset
 ```
 
 ### Test requestów z RapidAPI
@@ -166,8 +251,16 @@ Klasa `App\Monitoring\RequestMonitor` zawiera całą logikę monitorowania:
 - `recordRequest()` - zapisywanie requestu
 - `addRapidApiHook()` - dodawanie hooków
 - `triggerRapidApiHooks()` - wywoływanie hooków
-- `getStats()` - pobieranie statystyk
+- `getStats($filters)` - pobieranie statystyk (z opcjonalnymi filtrami)
 - `resetStats()` - reset statystyk
+
+### SimpleAuth Class
+
+Klasa `App\Auth\SimpleAuth` zawiera logikę autoryzacji:
+
+- `initialize()` - inicjalizacja (wczytuje zmienne środowiskowe)
+- `isAuthenticated()` - sprawdza autoryzację
+- `requireAuth()` - wymusza autoryzację
 
 ## Logi
 
@@ -179,6 +272,7 @@ System loguje:
 ## Bezpieczeństwo
 
 - Tokeny RapidAPI są przechowywane tylko jako hash (8 znaków MD5)
-- Endpointy monitoring są dostępne publicznie (rozważ dodanie autoryzacji w produkcji)
+- Endpoint `/v1/monitoring/stats` jest publiczny (podstawowe statystyki)
+- Endpointy `/v1/monitoring/stats/filtered` i `/v1/monitoring/reset` wymagają autoryzacji
+- Używaj silnych haseł/kluczy w produkcji
 - Statystyki mogą zawierać wrażliwe dane (endpointy, częstotliwość) - rozważ ograniczenie dostępu
-

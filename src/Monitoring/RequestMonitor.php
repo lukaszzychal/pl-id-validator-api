@@ -170,13 +170,13 @@ final class RequestMonitor
         }
     }
 
-    public static function getStats(): array
+    public static function getStats(?array $filters = null): array
     {
         $stats = self::loadStats();
         $startTime = $stats['start_time'] ?? (self::$startTime ?? time());
         $uptime = time() - $startTime;
         
-        return [
+        $result = [
             'total_requests' => $stats['total'],
             'rapidapi_requests' => $stats['rapidapi'],
             'direct_requests' => $stats['direct'],
@@ -195,6 +195,86 @@ final class RequestMonitor
                 ? round(($stats['total'] / $uptime) * 60, 2) 
                 : 0,
         ];
+
+        // Apply filters if provided
+        if ($filters !== null && !empty($filters)) {
+            $result = self::applyFilters($result, $filters);
+        }
+
+        return $result;
+    }
+
+    private static function applyFilters(array $stats, array $filters): array
+    {
+        // Filter by endpoint
+        if (isset($filters['endpoint']) && $filters['endpoint'] !== '') {
+            $endpoint = $filters['endpoint'];
+            if (isset($stats['by_endpoint'][$endpoint])) {
+                $stats['by_endpoint'] = [$endpoint => $stats['by_endpoint'][$endpoint]];
+            } else {
+                $stats['by_endpoint'] = [];
+            }
+        }
+
+        // Filter by method
+        if (isset($filters['method']) && $filters['method'] !== '') {
+            $method = strtoupper($filters['method']);
+            if (isset($stats['by_method'][$method])) {
+                $stats['by_method'] = [$method => $stats['by_method'][$method]];
+            } else {
+                $stats['by_method'] = [];
+            }
+        }
+
+        // Filter by source (rapidapi/direct)
+        if (isset($filters['source']) && $filters['source'] !== '') {
+            $source = strtolower($filters['source']);
+            if ($source === 'rapidapi') {
+                $stats['direct_requests'] = 0;
+                $stats['direct_percentage'] = 0;
+                $stats['total_requests'] = $stats['rapidapi_requests'];
+            } elseif ($source === 'direct') {
+                $stats['rapidapi_requests'] = 0;
+                $stats['rapidapi_percentage'] = 0;
+                $stats['total_requests'] = $stats['direct_requests'];
+                $stats['rapidapi_by_token'] = [];
+            }
+            // Recalculate percentages
+            if ($stats['total_requests'] > 0) {
+                $stats['rapidapi_percentage'] = $stats['rapidapi_requests'] > 0
+                    ? round(($stats['rapidapi_requests'] / $stats['total_requests']) * 100, 2)
+                    : 0;
+                $stats['direct_percentage'] = $stats['direct_requests'] > 0
+                    ? round(($stats['direct_requests'] / $stats['total_requests']) * 100, 2)
+                    : 0;
+            }
+        }
+
+        // Filter by token hash
+        if (isset($filters['token_hash']) && $filters['token_hash'] !== '') {
+            $tokenHash = $filters['token_hash'];
+            if (isset($stats['rapidapi_by_token'][$tokenHash])) {
+                $stats['rapidapi_by_token'] = [$tokenHash => $stats['rapidapi_by_token'][$tokenHash]];
+            } else {
+                $stats['rapidapi_by_token'] = [];
+            }
+        }
+
+        // Limit number of results
+        if (isset($filters['limit']) && is_numeric($filters['limit']) && $filters['limit'] > 0) {
+            $limit = (int) $filters['limit'];
+            if (isset($stats['by_endpoint']) && count($stats['by_endpoint']) > $limit) {
+                $stats['by_endpoint'] = array_slice($stats['by_endpoint'], 0, $limit, true);
+            }
+            if (isset($stats['by_method']) && count($stats['by_method']) > $limit) {
+                $stats['by_method'] = array_slice($stats['by_method'], 0, $limit, true);
+            }
+            if (isset($stats['rapidapi_by_token']) && count($stats['rapidapi_by_token']) > $limit) {
+                $stats['rapidapi_by_token'] = array_slice($stats['rapidapi_by_token'], 0, $limit, true);
+            }
+        }
+
+        return $stats;
     }
 
     public static function resetStats(): void

@@ -2,15 +2,20 @@
 
 declare(strict_types=1);
 
+use App\Auth\SimpleAuth;
 use App\Controllers\MonitoringController;
 use App\Controllers\ValidatorController;
 use App\Monitoring\RequestMonitor;
+use Slim\Exception\HttpUnauthorizedException;
 use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
 
 // Initialize monitoring
 RequestMonitor::initialize();
+
+// Initialize authentication
+SimpleAuth::initialize();
 
 $app = AppFactory::create();
 
@@ -32,7 +37,7 @@ $app->add(function ($request, $handler) use ($app) {
     $startTime = microtime(true);
     
     // Skip monitoring for monitoring endpoints themselves
-    $skipMonitoring = in_array($path, ['/v1/monitoring/stats', '/v1/monitoring/reset']);
+    $skipMonitoring = in_array($path, ['/v1/monitoring/stats', '/v1/monitoring/stats/filtered', '/v1/monitoring/reset']);
     
     // Detect RapidAPI request
     $isRapidApi = RequestMonitor::isRapidApiRequest($request);
@@ -106,7 +111,7 @@ $app->add(function ($request, $handler) use ($app) {
     return $response
         ->withHeader('Content-Type', 'application/json; charset=utf-8')
         ->withHeader('Access-Control-Allow-Origin', '*')
-        ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-RapidAPI-Proxy-Secret')
+        ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-RapidAPI-Proxy-Secret, X-RapidAPI-Key, X-RapidAPI-Host, X-API-Key')
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 });
 
@@ -128,8 +133,9 @@ $app->get('/', function ($request, $response) {
             'POST /v1/validate/nip' => 'Validate NIP',
             'POST /v1/validate/regon' => 'Validate REGON',
             'POST /v1/validate/iban' => 'Validate IBAN',
-            'GET  /v1/monitoring/stats' => 'Get request statistics',
-            'POST /v1/monitoring/reset' => 'Reset statistics',
+            'GET  /v1/monitoring/stats' => 'Get request statistics (public)',
+            'GET  /v1/monitoring/stats/filtered' => 'Get filtered statistics (requires auth)',
+            'POST /v1/monitoring/reset' => 'Reset statistics (requires auth)',
         ],
     ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
     return $response;
@@ -143,8 +149,9 @@ $app->post('/v1/validate/regon', [$validatorController, 'regon']);
 $app->post('/v1/validate/iban', [$validatorController, 'iban']);
 
 // Monitoring endpoints
-$app->get('/v1/monitoring/stats', [$monitoringController, 'stats']);
-$app->post('/v1/monitoring/reset', [$monitoringController, 'reset']);
+$app->get('/v1/monitoring/stats', [$monitoringController, 'stats']); // Public, no auth
+$app->get('/v1/monitoring/stats/filtered', [$monitoringController, 'statsFiltered']); // Requires auth
+$app->post('/v1/monitoring/reset', [$monitoringController, 'reset']); // Requires auth
 
 // Configure RapidAPI hooks (example hooks)
 RequestMonitor::addRapidApiHook(function ($request, $response, $context) {

@@ -5,3 +5,8 @@ services:
       dockerfile: docker/Dockerfile
     ports:
       - "8080:8080"
+    # Uncomment to enable monitoring authentication:
+    # environment:
+    #   MONITORING_USERNAME: admin
+    #   MONITORING_PASSWORD: your-secure-password
+    #   MONITORING_API_KEY: your-secure-api-key
