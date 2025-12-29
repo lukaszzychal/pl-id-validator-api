@@ -247,6 +247,197 @@ Przetestuj każdy endpoint:
 
 ## Krok 6: Konfiguracja monetizacji (Pricing & Rate Limits)
 
+### 6.1 Kompleksowy przewodnik konfiguracji planów
+
+Poniżej znajdziesz **pełne rekomendacje** z wyjaśnieniem każdego pola i wartości do wpisania.
+
+---
+
+### 📋 **Wyjaśnienie wszystkich pól w edytorze planu**
+
+#### **Plan Type (Typ planu)**
+
+**Dostępne opcje:**
+- **Monthly Subscription** (Miesięczna subskrypcja) - RECOMENDOWANE
+  - Użytkownik płaci stałą miesięczną opłatę
+  - Najprostszy model dla większości API
+  - Użytkownik ma dostęp do wszystkich funkcji przez cały miesiąc
+  
+- **Pay per Use** (Płać za użycie)
+  - Użytkownik płaci tylko za faktyczne użycie
+  - Każde wywołanie API kosztuje
+  - Dobre dla API z nieregularnym użyciem
+  
+- **Tiers** (Poziomy)
+  - Różne poziomy cenowe z różnymi limitami
+  - Bardziej skomplikowane w konfiguracji
+  - Dobre dla enterprise
+
+**Rekomendacja dla PL Validator API:** Wybierz **Monthly Subscription** - najprostsze i najbardziej przewidywalne dla użytkowników.
+
+---
+
+#### **Rate Limit (Limit szybkości)**
+
+**Co to jest:**
+- Maksymalna liczba requestów, które użytkownik może wykonać w określonym czasie
+- Chroni przed nadmiernym użyciem w krótkim czasie
+- Jest to **szybkość**, nie całkowita liczba requestów
+
+**Przykład:**
+- Rate Limit: `1,000 requests/hour`
+- Użytkownik może wykonać maksymalnie 1,000 requestów w ciągu godziny
+- Po 1 godzinie limit się resetuje
+- To NIE wpływa na całkowity miesięczny limit (Quota Limit)
+
+**Dostępne jednostki:**
+- `/ minute` - na minutę
+- `/ hour` - na godzinę (REKOMENDOWANE)
+- `/ day` - na dzień
+
+**Rekomendacja:** Ustaw w godzinach - łatwiej kontrolować i jest bardziej przyjazne dla użytkowników.
+
+**Checkbox "Maximum Limit":**
+- Zaznacz, jeśli chcesz włączyć rate limiting
+- Jeśli nie zaznaczysz, użytkownik może wysyłać requesty bez limitu szybkości (tylko Quota Limit)
+
+---
+
+#### **Require approval (Wymaga zatwierdzenia)**
+
+**Co to jest:**
+- Jeśli zaznaczysz, użytkownik musi poczekać na Twoją akceptację przed subskrypcją planu
+- Użyteczne dla drogich planów lub gdy chcesz kontrolować kto korzysta
+
+**Kiedy używać:**
+- Plan MEGA (drogie plany)
+- Gdy chcesz sprawdzić użytkownika przed dostępem
+- Enterprise plany
+
+**Rekomendacja dla PL Validator API:** **NIE zaznaczaj** - pozwól użytkownikom subskrybować automatycznie.
+
+---
+
+#### **Recommended Plan (Rekomendowany plan)**
+
+**Co to jest:**
+- Plan oznaczony jako "Rekomendowany" będzie miał badge "Recommended" w Hub
+- Tylko jeden plan może być rekomendowany na raz
+- Pomaga użytkownikom wybrać najlepszy plan
+
+**Kiedy używać:**
+- Wybierz plan, który najlepiej pasuje dla większości użytkowników
+- Zazwyczaj plan środkowy (PRO lub ULTRA)
+
+**Rekomendacja dla PL Validator API:** Zaznacz dla **PRO planu** - dobry balans między ceną a limitami.
+
+---
+
+#### **Subscription Price (Cena subskrypcji)**
+
+**Co to jest:**
+- Miesięczna opłata za dostęp do planu
+- Wprowadź kwotę w USD (bez znaku $, tylko cyfry)
+- Przykład: `9.99` = $9.99/month
+
+**Dla startu (Beta/Soft Launch):**
+- Możesz ustawić wszystkie plany na `0.00` żeby zdobyć użytkowników
+- Później możesz dodać ceny
+
+**Dla pełnego launchu:**
+- Ustaw odpowiednie ceny zgodnie z rekomendacjami poniżej
+
+---
+
+### 📊 **Wyjaśnienie pól w modalu "Requests"**
+
+#### **Quota Type (Typ kwoty)**
+
+**Dostępne opcje:**
+- **Unlimited** - Nieograniczone (bez limitu)
+  - Użytkownik może używać bez limitu
+  - Tylko Rate Limit będzie działał
+  
+- **Monthly** - Miesięczne (REKOMENDOWANE)
+  - Limit resetuje się co miesiąc
+  - Najbardziej popularne
+  
+- **Daily** - Dzienne
+  - Limit resetuje się codziennie
+  - Mniej popularne, ale dobre dla bardzo aktywnych API
+
+**Rekomendacja:** Wybierz **Monthly** - standardowe i łatwe do zrozumienia.
+
+---
+
+#### **Quota Limit (Limit kwoty)**
+
+**Co to jest:**
+- Całkowita liczba requestów dostępna w okresie (miesięcznym/dziennym)
+- Przykład: `100000` = 100,000 requestów w miesiącu
+
+**Jak obliczyć:**
+- Pomyśl o typowym użytkowniku
+- Przykład: Mały biznes może walidować 100 NIPów dziennie = 3,000/month
+- Daj bezpieczny margines
+
+**Wartość do wpisania:**
+- Wpisz tylko liczbę, bez separatorów
+- Przykład: `100000` (nie `100,000`)
+
+---
+
+#### **Limit Type (Typ limitu)**
+
+**Dostępne opcje:**
+
+**Soft Limit (Miękki limit) - RECOMENDOWANE**
+- Użytkownik może przekroczyć limit
+- Za dodatkowe użycie płaci "Overages"
+- Użytkownik nie dostaje błędów, API dalej działa
+- **Przykład:** Limit 10,000, użył 12,000 = zapłaci za 2,000 extra
+
+**Hard Limit (Twardy limit)**
+- Użytkownik NIE może przekroczyć limitu
+- Po osiągnięciu limitu dostaje błąd 429 (Too Many Requests)
+- API przestaje działać do końca okresu
+- Użytkownik nie może używać nawet jeśli chce płacić
+
+**Rekomendacja:** Wybierz **Soft Limit** - lepsze doświadczenie użytkownika, możliwość zarabiania na overages.
+
+---
+
+#### **Overages (Dopłaty za przekroczenie)**
+
+**Co to jest:**
+- Cena za każdy dodatkowy request po przekroczeniu Quota Limit
+- Działa tylko z Soft Limit
+
+**Jak obliczyć:**
+- Jeśli chcesz $0.01 za 1,000 dodatkowych requestów:
+  - $0.01 ÷ 1,000 = $0.00001 per request
+- Jeśli chcesz $0.005 za 1,000 dodatkowych requestów:
+  - $0.005 ÷ 1,000 = $0.000005 per request
+
+**Wartość do wpisania:**
+- Wpisz w formacie: `0.00001` (nie `$0.00001`)
+- Dla bezpłatnych overages: `0`
+
+**Przykład kalkulacji:**
+```
+Użytkownik na planie PRO:
+- Quota: 100,000 requests/month
+- Użył: 120,000 requests
+- Extra: 20,000 requests
+- Overages: 20,000 × $0.00001 = $0.20 dodatkowej opłaty
+```
+
+**Rekomendacja dla startu:** Ustaw `0` (bezpłatne overages) żeby zachęcić użytkowników.
+
+---
+
+### 🎯 **Rekomendowane konfiguracje dla PL Validator API**
+
 ### 6.1 Rekomendowane limity dla PL Validator API
 
 Ponieważ to lekkie API walidacyjne (bez bazy danych, szybkie odpowiedzi), możesz ustawić wyższe limity:
@@ -413,6 +604,137 @@ Overages: 0 (lub 0.000002)
 Rate Limit: 20,000 requests per hour
 ```
 
+---
+
+### 📋 **Kompletna tabela konfiguracji wszystkich planów**
+
+| Plan | Subscription Price | Rate Limit | Quota Limit | Overages | Recommended | Features |
+|------|-------------------|------------|-------------|----------|-------------|----------|
+| **BASIC** | $0.00 | 1,000/hour | 10,000/month | $0.00 | ❌ | Brak |
+| **PRO** | $0.00* | 5,000/hour | 100,000/month | $0.00* | ✅ TAK | Email Support |
+| **ULTRA** | $0.00* | 10,000/hour | 500,000/month | $0.00* | ❌ | Email + Priority |
+| **MEGA** | $0.00* | 20,000/hour | 2,000,000/month | $0.00* | ❌ | Wszystkie |
+
+*Dla startu ustaw $0.00, później zmień na: PRO=$9.99, ULTRA=$29.99, MEGA=$99.99
+
+---
+
+### 🎯 **Finalne wartości do wpisania - Quick Copy**
+
+#### **BASIC Plan:**
+
+**Główny edytor:**
+```
+Plan Type: Monthly Subscription ✓
+Subscription Price: 0.00
+Rate Limit: ✓ Maximum Limit: 1000 / hour
+Require approval: ☐ (niezaznaczone)
+Recommended Plan: ☐ (niezaznaczone)
+```
+
+**Modal "BASIC / Requests":**
+```
+Quota Type: Monthly ✓
+Quota Limit: 10000
+Limit Type: Soft Limit ✓
+Overages: 0
+```
+
+**Features:** Brak
+
+---
+
+#### **PRO Plan:**
+
+**Główny edytor:**
+```
+Plan Type: Monthly Subscription ✓
+Subscription Price: 0.00 (lub 9.99)
+Rate Limit: ✓ Maximum Limit: 5000 / hour
+Require approval: ☐ (niezaznaczone)
+Recommended Plan: ☑ (ZAZNACZONE - to jest rekomendowany plan)
+```
+
+**Modal "PRO / Requests":**
+```
+Quota Type: Monthly ✓
+Quota Limit: 100000
+Limit Type: Soft Limit ✓
+Overages: 0 (lub 0.00001 dla $0.01/1k extra)
+```
+
+**Features:**
+- ✅ Email Support
+
+---
+
+#### **ULTRA Plan:**
+
+**Główny edytor:**
+```
+Plan Type: Monthly Subscription ✓
+Subscription Price: 0.00 (lub 29.99)
+Rate Limit: ✓ Maximum Limit: 10000 / hour
+Require approval: ☐ (niezaznaczone)
+Recommended Plan: ☐ (niezaznaczone - PRO jest recommended)
+```
+
+**Modal "ULTRA / Requests":**
+```
+Quota Type: Monthly ✓
+Quota Limit: 500000
+Limit Type: Soft Limit ✓
+Overages: 0 (lub 0.000005 dla $0.005/1k extra)
+```
+
+**Features:**
+- ✅ Email Support
+- ✅ Priority Response
+
+---
+
+#### **MEGA Plan:**
+
+**Główny edytor:**
+```
+Plan Type: Monthly Subscription ✓
+Subscription Price: 0.00 (lub 99.99)
+Rate Limit: ✓ Maximum Limit: 20000 / hour
+Require approval: ☐ (lub ☑ jeśli chcesz kontrolować)
+Recommended Plan: ☐ (niezaznaczone)
+```
+
+**Modal "MEGA / Requests":**
+```
+Quota Type: Monthly ✓
+Quota Limit: 2000000 (lub pozostaw puste dla Unlimited)
+Limit Type: Soft Limit ✓
+Overages: 0 (lub 0.000002 dla $0.002/1k extra)
+```
+
+**Features:**
+- ✅ Email Support
+- ✅ Priority Response
+- ✅ 99.9% Uptime SLA
+- ✅ Custom Integration Help
+
+---
+
+### 💡 **Strategia cenowa - Dla startu vs Pełny launch**
+
+#### **Wersja Beta/Soft Launch (Start):**
+- Wszystkie plany za **$0.00**
+- Overages na **$0.00**
+- Cel: Zbierać użytkowników i feedback
+- Po 1-3 miesiącach dodaj ceny
+
+#### **Pełny Launch (Production):**
+- **BASIC:** $0.00 (zawsze darmowy)
+- **PRO:** $9.99/month
+- **ULTRA:** $29.99/month
+- **MEGA:** $99.99/month
+- Overages: ustaw według rekomendacji powyżej
+
 ### 6.2b Krok po kroku - Konfiguracja
 
 1. Przejdź do zakładki **"Monetize"** w swoim projekcie API
@@ -522,12 +844,64 @@ Aby zużyć 10 GB (10,240 MB):
 
 ---
 
-### 6.4 Rekomendacje dla PL Validator API
+### 6.5 Features (Funkcje) - Opcjonalne
+
+**Co to są Features:**
+- Dodatkowe funkcje/benefity które możesz przypisać do planów
+- Pomagają różnicować plany i zachęcać do upgrade'u
+- Widoczne dla użytkowników w Hub
+
+**Jak dodać Feature:**
+1. Kliknij **"+ Add Feature"** w sekcji Features
+2. Wypełnij:
+   - **Name:** Nazwa funkcji (np. "Priority Support")
+   - **Description:** Opis (opcjonalnie)
+   - **Associated Endpoints:** Wybierz endpointy jeśli funkcja dotyczy tylko niektórych (opcjonalnie)
+
+**Rekomendowane Features dla PL Validator API:**
+
+#### **Dla planu BASIC (Free):**
+- ❌ Brak dodatkowych features (to jest free plan)
+
+#### **Dla planu PRO:**
+- ✅ **Email Support**
+  - Name: `Email Support`
+  - Description: `Get email support for API usage questions`
+  - Associated Endpoints: (pozostaw puste - wszystkie endpointy)
+
+#### **Dla planu ULTRA:**
+- ✅ **Email Support** (jak w PRO)
+- ✅ **Priority Response**
+  - Name: `Priority Response`
+  - Description: `Faster response times for support requests`
+  - Associated Endpoints: (pozostaw puste)
+
+#### **Dla planu MEGA:**
+- ✅ **Email Support**
+- ✅ **Priority Response**
+- ✅ **SLA Guarantee**
+  - Name: `99.9% Uptime SLA`
+  - Description: `Guaranteed 99.9% uptime with SLA`
+  - Associated Endpoints: (pozostaw puste)
+- ✅ **Custom Integration Help**
+  - Name: `Custom Integration Help`
+  - Description: `Assistance with custom integration requirements`
+  - Associated Endpoints: (pozostaw puste)
+
+**Strategia Features:**
+- Więcej features = wyższy plan = wyższa cena
+- Features powinny być wartościowe dla użytkowników
+- Nie przesadzaj - zbyt dużo może przytłoczyć
+
+---
+
+### 6.6 Podsumowanie rekomendacji dla PL Validator API
 
 **Co skonfigurować:**
 1. ✅ **Requests** - główny sposób mierzenia użycia, SKONFIGURUJ
 2. ⚠️ **Bandwidth Platform Fee** - pozostaw domyślne (RapidAPI)
 3. ⚠️ **Rapid-free-plans-hard-limit** - pozostaw domyślne (RapidAPI)
+4. ✅ **Features** - dodaj dla płatnych planów (opcjonalnie, ale zalecane)
 
 **Dlaczego Requests jest ważniejsze:**
 - Dla API z małymi odpowiedziami JSON, Requests jest głównym limitem
