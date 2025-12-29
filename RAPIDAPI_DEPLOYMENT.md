@@ -303,21 +303,128 @@ Ponieważ to lekkie API walidacyjne (bez bazy danych, szybkie odpowiedzi), może
 - Około 66,600 requestów dziennie
 - Najwyższy tier z najlepszą wartością
 
-### 6.2 Konfiguracja w RapidAPI Studio
+### 6.2 Konfiguracja w RapidAPI Studio - Wartości do wpisania
+
+#### **BASIC Plan (Free)**
+
+**W głównym edytorze planu:**
+- **Plan Type:** Monthly Subscription
+- **Subscription Price:** `0.00`
+- **Rate Limit:** `1,000 requests per hour`
+- **Require approval:** ☐ (niezaznaczone)
+- **Recommended Plan:** ☐ (niezaznaczone)
+
+**W modalu "BASIC / Requests":**
+- **Quota Type:** Monthly ✓
+- **Quota Limit:** `10000` (10,000)
+- **Limit Type:** Soft Limit ✓
+- **Overages:** `0` ($0.00 per extra request)
+- Kliknij **"Save Changes"**
+
+---
+
+#### **PRO Plan**
+
+**W głównym edytorze planu:**
+- **Plan Type:** Monthly Subscription
+- **Subscription Price:** `0.00` (lub `9.99` dla pełnego launchu)
+- **Rate Limit:** `5,000 requests per hour`
+- **Require approval:** ☐ (niezaznaczone)
+- **Recommended Plan:** ☑ (zaznacz - dobry plan dla większości użytkowników)
+
+**W modalu "PRO / Requests":**
+- **Quota Type:** Monthly ✓
+- **Quota Limit:** `100000` (100,000)
+- **Limit Type:** Soft Limit ✓
+- **Overages:** `0` (lub `0.00001` dla $0.01 per 1,000 extra)
+- Kliknij **"Save Changes"**
+
+**Uwaga:** `0.00001` = $0.01 za 1,000 dodatkowych requestów
+
+---
+
+#### **ULTRA Plan**
+
+**W głównym edytorze planu:**
+- **Plan Type:** Monthly Subscription
+- **Subscription Price:** `0.00` (lub `29.99` dla pełnego launchu)
+- **Rate Limit:** `10,000 requests per hour`
+- **Require approval:** ☐ (niezaznaczone)
+- **Recommended Plan:** ☐ (niezaznaczone - PRO jest recommended)
+
+**W modalu "ULTRA / Requests":**
+- **Quota Type:** Monthly ✓
+- **Quota Limit:** `500000` (500,000)
+- **Limit Type:** Soft Limit ✓
+- **Overages:** `0` (lub `0.000005` dla $0.005 per 1,000 extra)
+- Kliknij **"Save Changes"**
+
+**Uwaga:** `0.000005` = $0.005 za 1,000 dodatkowych requestów
+
+---
+
+#### **MEGA Plan**
+
+**W głównym edytorze planu:**
+- **Plan Type:** Monthly Subscription
+- **Subscription Price:** `0.00` (lub `99.99` dla pełnego launchu)
+- **Rate Limit:** `20,000 requests per hour`
+- **Require approval:** ☐ (niezaznaczone)
+- **Recommended Plan:** ☐ (niezaznaczone)
+
+**W modalu "MEGA / Requests":**
+- **Quota Type:** Monthly ✓
+- **Quota Limit:** `2000000` (2,000,000) lub pozostaw puste dla Unlimited
+- **Limit Type:** Soft Limit ✓
+- **Overages:** `0` (lub `0.000002` dla $0.002 per 1,000 extra)
+- Kliknij **"Save Changes"**
+
+**Uwaga:** `0.000002` = $0.002 za 1,000 dodatkowych requestów
+
+---
+
+### 6.2a Quick Reference - Wartości do skopiowania
+
+**BASIC:**
+```
+Quota Limit: 10000
+Overages: 0
+Rate Limit: 1,000 requests per hour
+```
+
+**PRO:**
+```
+Quota Limit: 100000
+Overages: 0 (lub 0.00001)
+Rate Limit: 5,000 requests per hour
+```
+
+**ULTRA:**
+```
+Quota Limit: 500000
+Overages: 0 (lub 0.000005)
+Rate Limit: 10,000 requests per hour
+```
+
+**MEGA:**
+```
+Quota Limit: 2000000
+Overages: 0 (lub 0.000002)
+Rate Limit: 20,000 requests per hour
+```
+
+### 6.2b Krok po kroku - Konfiguracja
 
 1. Przejdź do zakładki **"Monetize"** w swoim projekcie API
 2. Przejdź do sub-tab **"Public Plans"**
 3. Dla każdego planu (BASIC, PRO, ULTRA, MEGA):
    - Kliknij przycisk **"Edit"** na karcie planu
-   - Wypełnij ustawienia zgodnie z rekomendacjami powyżej
+   - Wypełnij ustawienia z sekcji powyżej (6.2)
    - Dla **Requests** (Object):
-     - Kliknij przycisk **"Quota"** lub **"+"**
-     - **Quota Type:** Monthly
-     - **Quota Limit:** zgodnie z wartościami powyżej
-     - **Limit Type:** Soft Limit (pozwala na przekroczenie z overages)
-     - **Overages:** ustaw zgodnie z rekomendacjami
-   - **Rate Limit:** ustaw w sekcji "Rate Limit" w głównym edytorze planu
-   - Kliknij **"Save Changes"**
+     - Kliknij przycisk **"Quota"** lub **"+"** przy obiekcie "Requests"
+     - Użyj wartości z tabeli powyżej
+   - Kliknij **"Save Changes"** w modalu Requests
+   - Kliknij **"Save Changes"** w głównym edytorze planu
 
 ### 6.3 Wyjaśnienie obiektów: Requests vs Bandwidth Platform Fee
 
