@@ -197,23 +197,29 @@ RapidAPI powinno automatycznie wykryć wszystkie endpointy z OpenAPI spec:
 
 ### 4.2 Konfiguracja Base URL
 
-1. W ustawieniach API, znajdź sekcję **"Base URL"**
-2. Ustaw na URL Twojego wdrożenia:
+**Gdzie znaleźć Base URL:**
+1. W dashboardzie aplikacji, przejdź do **"Settings"** lub **"Configuration"**
+2. Znajdź sekcję **"Base URL"** lub **"API Base URL"**
+3. Ustaw na URL Twojego wdrożenia:
    ```
    https://pl-id-validator-api-production.up.railway.app
    ```
-3. **Nie dodawaj** `/v1` na końcu - endpointy w OpenAPI już to zawierają
+4. **Nie dodawaj** `/v1` na końcu - endpointy w OpenAPI już to zawierają
 
-### 4.3 Konfiguracja autentykacji
+**Alternatywnie:**
+- Jeśli importujesz OpenAPI spec, RapidAPI może automatycznie wykryć Base URL z sekcji `servers` w pliku
+- W takim przypadku upewnij się, że w `openapi.yaml` masz prawidłowy URL Railway
 
-**Dla publicznego API (jak to):**
-1. W sekcji **"Security"** lub **"Authentication"**
-2. Wybierz **"No Authentication"** lub **"Public"**
-3. API będzie dostępne bez klucza API (lub z opcjonalnym RapidAPI key)
+### 4.3 Weryfikacja konfiguracji autoryzacji
 
-**Opcjonalnie - API Key (dla statystyk):**
-- Możesz wymagać RapidAPI subscription key dla dostępu
-- To pozwoli na śledzenie użycia
+**Sprawdź ustawienia autoryzacji:**
+1. W ustawieniach aplikacji znajdź sekcję **"Authorization"** lub **"Security"**
+2. Powinno być ustawione na **"RapidAPI"** (zgodnie z konfiguracją z kroku 3.4)
+3. To oznacza, że użytkownicy będą musieli używać RapidAPI subscription key
+
+**Zmiana autoryzacji (jeśli potrzebna):**
+- Jeśli chcesz API bez autoryzacji: wybierz **"No Authentication"** lub **"Public"**
+- Dla większości przypadków, **"RapidAPI"** jest najlepszym wyborem - pozwala na śledzenie użycia i zarządzanie dostępem
 
 ---
 
