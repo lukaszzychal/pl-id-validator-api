@@ -28,6 +28,23 @@ $app->options('/{routes:.+}', function ($request, $response) {
 
 $controller = new ValidatorController();
 
+// Root endpoint - API information
+$app->get('/', function ($request, $response) {
+    $response->getBody()->write(json_encode([
+        'name' => 'PL Validator API',
+        'version' => '1.0.0',
+        'description' => 'Validate and normalize Polish identifiers (NIP, REGON) and IBAN',
+        'endpoints' => [
+            'GET  /v1/health' => 'Health check',
+            'POST /v1/normalize' => 'Normalize input value',
+            'POST /v1/validate/nip' => 'Validate NIP',
+            'POST /v1/validate/regon' => 'Validate REGON',
+            'POST /v1/validate/iban' => 'Validate IBAN',
+        ],
+    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+    return $response;
+});
+
 $app->get('/v1/health', [$controller, 'health']);
 $app->post('/v1/normalize', [$controller, 'normalize']);
 $app->post('/v1/validate/nip', [$controller, 'nip']);
