@@ -319,11 +319,118 @@ Ponieważ to lekkie API walidacyjne (bez bazy danych, szybkie odpowiedzi), może
    - **Rate Limit:** ustaw w sekcji "Rate Limit" w głównym edytorze planu
    - Kliknij **"Save Changes"**
 
-### 6.3 Dodatkowe obiekty (Opcjonalnie)
+### 6.3 Wyjaśnienie obiektów: Requests vs Bandwidth Platform Fee
 
-Możesz dodać dodatkowe obiekty:
-- **Bandwidth Platform Fee:** zazwyczaj pozostaw domyślne (RapidAPI zarządza)
-- **Rapid-free-plans-hard-limit:** pozostaw domyślne dla free planów
+#### **Requests (Liczba żądań)**
+
+**Co to jest:**
+- **Requests** = liczba wywołań do endpointów API
+- Każde wywołanie endpointu = 1 request
+- Przykład: Wywołanie `/v1/validate/nip` = 1 request
+
+**Jak działa:**
+- Ustawiasz limit np. **10,000 requests/month**
+- Użytkownik może wykonać maksymalnie 10,000 wywołań w miesiącu
+- Po przekroczeniu limitu:
+  - **Soft Limit:** użytkownik może dalej używać, ale płaci overages (np. $0.01 per 1,000 extra)
+  - **Hard Limit:** użytkownik dostaje błąd 429 (Too Many Requests) i nie może dalej używać
+
+**Dla PL Validator API:**
+- To główny sposób mierzenia użycia
+- Każda walidacja NIP/REGON/IBAN = 1 request
+- Ważne dla ograniczenia użycia i zarabiania
+
+**Przykład:**
+```
+Użytkownik na planie PRO (100,000 requests/month):
+- Dnia 1-15: używa 50,000 requests
+- Dnia 16-20: używa kolejne 40,000 requests  
+- Dnia 21-30: używa kolejne 20,000 requests
+- RAZEM: 110,000 requests
+- Z quoty: 100,000 requests (bezpłatne)
+- Overages: 10,000 requests × $0.01/1,000 = $0.10 dodatkowej opłaty
+```
+
+---
+
+#### **Bandwidth Platform Fee (Opłata za przepustowość)**
+
+**Co to jest:**
+- **Bandwidth** = ilość danych przesyłanych między klientem a API
+- Mierzone w megabajtach (MB) lub gigabajtach (GB)
+- Każda odpowiedź API zawiera dane - to kosztuje przepustowość
+
+**Jak działa:**
+- RapidAPI mierzy ilość danych przesyłanych przez ich platformę
+- 1 jednostka = 1 MB danych
+- Po przekroczeniu limitu, naliczane są overages
+
+**Dla PL Validator API:**
+- Odpowiedzi są małe (kilkaset bajtów JSON)
+- Przykład odpowiedzi: `{"valid":true,"normalized":"1234563218"}` = ~50 bajtów
+- 1 MB = ~20,000 takich odpowiedzi
+- **Dlatego:** Dla tego API, bandwidth zwykle nie jest problemem
+
+**Przykład kalkulacji:**
+```
+Request do API:
+- Request body: ~30 bajtów JSON
+- Response: ~50 bajtów JSON
+- RAZEM: ~80 bajtów = 0.00008 MB
+
+Aby zużyć 1 MB:
+- Potrzebne: 1 MB / 0.00008 MB = 12,500 requests
+
+Aby zużyć 10 GB (10,240 MB):
+- Potrzebne: 10,240 MB / 0.00008 MB = 128,000,000 requests
+```
+
+**Domyślne ustawienia:**
+- RapidAPI często ustawia domyślne limity bandwidth
+- Dla free planów: zazwyczaj 10 GB/month
+- Dla płatnych: wyższe limity lub unlimited
+
+**Czy zmieniać ustawienia?**
+- **Zazwyczaj NIE** - pozostaw domyślne ustawienia RapidAPI
+- Bandwidth dla małych odpowiedzi JSON nie jest problemem
+- Skup się na limitach **Requests**, nie Bandwidth
+
+---
+
+#### **Rapid-free-plans-hard-limit**
+
+**Co to jest:**
+- Specjalny obiekt tylko dla darmowych planów (BASIC)
+- Niewidoczny dla użytkowników końcowych
+- Służy do ustawienia twardego limitu dla free planów
+
+**Jak działa:**
+- Użytkownik widzi tylko limit "Requests" (np. 10,000/month)
+- Ale może być też ukryty hard limit (np. 500,000/month)
+- Po przekroczeniu hard limit, użytkownik dostaje błąd - nawet jeśli ma Soft Limit na Requests
+
+**Dla PL Validator API:**
+- Zazwyczaj pozostaw domyślne ustawienia RapidAPI
+- Służy jako zabezpieczenie przed nadużyciem free planów
+
+---
+
+### 6.4 Rekomendacje dla PL Validator API
+
+**Co skonfigurować:**
+1. ✅ **Requests** - główny sposób mierzenia użycia, SKONFIGURUJ
+2. ⚠️ **Bandwidth Platform Fee** - pozostaw domyślne (RapidAPI)
+3. ⚠️ **Rapid-free-plans-hard-limit** - pozostaw domyślne (RapidAPI)
+
+**Dlaczego Requests jest ważniejsze:**
+- Dla API z małymi odpowiedziami JSON, Requests jest głównym limitem
+- Bandwidth rzadko będzie przekroczone (10 GB = ~128 milionów requestów)
+- Skup się na limitach Requests i overages
+
+**Podsumowanie:**
+- **Requests** = "Ile razy można wywołać API" (główne ograniczenie)
+- **Bandwidth** = "Ile danych można przesłać" (rzadko problem dla JSON API)
+- **Platform Fee** = opłata RapidAPI (20% od płatności użytkowników) - automatyczna
 
 ### 6.4 Features (Opcjonalnie)
 
