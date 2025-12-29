@@ -56,14 +56,52 @@ Middleware logujący który zapisuje:
 
 ### Gdzie znaleźć logi:
 
-**W Railway Dashboard:**
-1. Przejdź do projektu
-2. Kliknij na service (kontener)
-3. Zakładka **"Logs"** lub **"Deployments"** → wybierz deployment → **"View Logs"**
+**WAŻNE: Railway ma dwa typy logów!**
 
-**Przez Railway CLI:**
+1. **HTTP Logs** (zakładka w service details) - to są logi z Railway Gateway/proxy
+   - Pokazują tylko metadane (requestId, duration, bytes, status)
+   - **To NIE są logi z aplikacji!**
+
+2. **Logs** (główna zakładka w service) - to są logi z aplikacji (stdout/stderr)
+   - Tu są logi z `error_log()` - pełne requesty i responses
+   - **To są logi z Twojej aplikacji!**
+
+**Jak znaleźć pełne logi z aplikacji w Railway Dashboard:**
+
+**Sposób 1: Przez główną zakładkę "Logs"**
+1. W Railway Dashboard, kliknij na service "pl-id-validator-api"
+2. U góry są zakładki: **"Architecture"**, **"Observability"**, **"Logs"**, **"Settings"**
+3. Kliknij na **"Logs"** (główna zakładka, nie ta w service details!)
+4. Tutaj zobaczysz pełne logi z aplikacji, w tym:
+   ```
+   [REQUEST] POST /v1/validate/nip | Source: RapidAPI | IP: :: | Body (raw): {"value":"..."} | Body (parsed): {"value":"..."}
+   [RESPONSE] POST /v1/validate/nip | Status: 200 | Duration: 3.82ms | Body: {"valid":true,...}
+   ```
+
+**Sposób 2: Przez Deploy Logs**
+1. Kliknij na service "pl-id-validator-api"
+2. W panelu po prawej, zakładka **"Deploy Logs"**
+3. Wybierz ostatni deployment
+4. Kliknij **"View Logs"**
+
+**Sposób 3: Przez Railway CLI**
 ```bash
+# Wszystkie logi z aplikacji
 railway logs
+
+# Tylko ostatnie 100 linii
+railway logs --tail 100
+
+# Logi w czasie rzeczywistym (follow)
+railway logs --follow
+```
+
+**Sposób 4: SSH do kontenera**
+```bash
+railway ssh
+# W kontenerze:
+tail -f /proc/1/fd/1  # stdout
+tail -f /proc/1/fd/2  # stderr
 ```
 
 ### Co jest logowane:
@@ -116,11 +154,21 @@ Jeśli chcesz wyłączyć szczegółowe logowanie (np. w produkcji):
 
 ## Różnica między logami:
 
-| Źródło | Co loguje | Gdzie widoczne |
-|--------|-----------|----------------|
+| Źródło | Co loguje | Gdzie widoczne w Railway |
+|--------|-----------|-------------------------|
+| **Railway Gateway (HTTP Logs)** | Metadane (requestId, duration, bytes, status) | Service Details → "HTTP Logs" tab |
 | **RapidAPI Gateway** | Metadane (requestId, duration, bytes) | RapidAPI Dashboard / Analytics |
-| **Railway (PHP Server)** | Podstawowe informacje (Accepted, Closing) | Railway Logs |
-| **Aplikacja (Middleware)** | Pełne requesty i responses | Railway Logs ✅ |
+| **Aplikacja (Middleware)** | **Pełne requesty i responses** ✅ | **Service → "Logs" tab** (główna zakładka) |
+| **PHP Server** | Podstawowe informacje (Accepted, Closing) | Service → "Logs" tab |
+
+**WAŻNE:** 
+- **HTTP Logs** (w service details) = logi z Railway Gateway (tylko metadane)
+- **Logs** (główna zakładka) = logi z aplikacji (pełne requesty/responses z `error_log()`)
+
+**Aby zobaczyć pełne logi z aplikacji:**
+1. Kliknij na service
+2. Kliknij na główną zakładkę **"Logs"** (na górze, obok "Observability")
+3. **NIE** klikaj na "HTTP Logs" w service details panelu!
 
 **Teraz widzisz wszystko!** 🎉
 
