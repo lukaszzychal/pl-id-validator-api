@@ -58,6 +58,7 @@ composer test
 
 - **[TESTING.md](./TESTING.md)** - Kompletna dokumentacja testów dla QA
 - **[RAPIDAPI_DEPLOYMENT.md](./RAPIDAPI_DEPLOYMENT.md)** - Krok po kroku wdrożenie do RapidAPI
+- **[TUTORIAL.md](./TUTORIAL.md)** - Tutorial: Middleware i autoryzacja w Slim Framework
 
 ## OpenAPI (for RapidAPI)
 
