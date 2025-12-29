@@ -1,0 +1,136 @@
+openapi: 3.0.3
+info:
+  title: PL Validator API
+  version: 1.0.0
+  description: Validate and normalize Polish identifiers (NIP, REGON) and IBAN (PL).
+servers:
+  - url: https://YOUR_PUBLIC_HOST
+paths:
+  /v1/health:
+    get:
+      summary: Healthcheck
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /v1/normalize:
+    post:
+      summary: Normalize input (remove separators, keep alnum, uppercase)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValueRequest"
+      responses:
+        "200":
+          description: Normalized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  normalized:
+                    type: string
+                    example: PL10105000997603123456789123
+  /v1/validate/nip:
+    post:
+      summary: Validate NIP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValueRequest"
+      responses:
+        "200":
+          description: Result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NipResponse"
+  /v1/validate/regon:
+    post:
+      summary: Validate REGON (9 or 14)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValueRequest"
+      responses:
+        "200":
+          description: Result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegonResponse"
+  /v1/validate/iban:
+    post:
+      summary: Validate IBAN (generic MOD 97-10, works for PL)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValueRequest"
+      responses:
+        "200":
+          description: Result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IbanResponse"
+
+components:
+  schemas:
+    ValueRequest:
+      type: object
+      required: [value]
+      properties:
+        value:
+          type: string
+          example: "123-456-32-18"
+    NipResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+          example: true
+        normalized:
+          type: string
+          example: "1234563218"
+    RegonResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+          example: true
+        type:
+          type: string
+          nullable: true
+          example: "9"
+          description: "9 or 14 (or null when invalid/unknown length)"
+        normalized:
+          type: string
+          example: "590096454"
+    IbanResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+          example: true
+        country:
+          type: string
+          nullable: true
+          example: "PL"
+        normalized:
+          type: string
+          example: "PL10105000997603123456789123"
