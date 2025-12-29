@@ -88,99 +88,83 @@ Możesz zweryfikować specyfikację używając:
 
 ---
 
-## Krok 3: Tworzenie API w RapidAPI
+## Krok 3: Tworzenie API Project w RapidAPI Studio
 
-### 3.1 Logowanie i przejście do My APIs
+**Ważne:** RapidAPI używa teraz **RapidAPI Studio** do zarządzania API. Tworzymy **API Project**, nie "App".
+
+### 3.1 Logowanie i przejście do RapidAPI Studio
 
 1. Zaloguj się na [RapidAPI](https://rapidapi.com/)
-2. Kliknij na swoją ikonę profilu (prawy górny róg)
-3. Wybierz **"My APIs"**
+2. W górnym menu kliknij **"Studio"** (lub przejdź bezpośrednio do https://rapidapi.com/studio)
+3. Zostaniesz przekierowany do RapidAPI Studio
 
-### 3.2 Dodanie nowego API
+### 3.2 Dodanie nowego API Project
 
-1. Kliknij przycisk **"Add New API"** lub **"Add New App"** w lewym menu
-2. Zostaniesz przekierowany do formularza **"Add New App"**
+1. Na stronie RapidAPI Studio, kliknij przycisk **"+ Add API Project"** (prawy górny róg lub w głównej sekcji)
+2. Zostanie otwarty modal **"Add API Project"**
 
-### 3.3 Wypełnienie podstawowych informacji
+### 3.3 Wypełnienie formularza "Add API Project"
 
-W formularzu uzupełnij sekcję **"Describe your App"**:
+W modalu **"Add API Project"** wypełnij:
 
-1. **App Name:** (wymagane)
-   - Wpisz: `PL Validator API`
-   - To pole jest już widoczne w formularzu
+1. **Name:** (wymagane)
+   - Wpisz: `PL-Validator-API` (możesz użyć myślników lub podkreśleń)
+   - Przykład: `PL Validator API` lub `pl-validator-api`
 
 2. **Description:**
    - Wpisz: `Validate and normalize Polish identifiers (NIP, REGON) and IBAN`
    - Opcjonalnie możesz dodać więcej szczegółów
 
-3. **Thumbnail:** (opcjonalne)
-   - Możesz przesłać logo/ikona dla API
-   - Kliknij **"Select Image"** i wybierz plik graficzny
+3. **Category:**
+   - Wybierz z dropdown: **"Business"** (lub odpowiednią kategorię)
+   - Inne opcje: `Developer Tools`, `Finance`, etc.
 
-### 3.4 Konfiguracja autoryzacji
+4. **Team:**
+   - Wybierz **"Personal"** (domyślnie) lub wybierz zespół jeśli masz
 
-W sekcji **"Add initial authorization"**:
+5. **Import data from:** ⚠️ **WAŻNE - TO JEST KLUCZOWE**
+   - Wybierz **"OpenAPI"** (radio button)
+   - **NIE wybieraj "Do not import"** - jeśli wybierzesz to, będziesz musiał dodawać endpointy ręcznie
 
-1. **Authorization Name:** (opcjonalne)
-   - Możesz zostawić puste lub wpisać nazwę np. `Default`
+### 3.4 Importowanie OpenAPI Spec
 
-2. **Select gateways:**
-   - Zaznacz checkbox **"rapidapi.com (RapidAPI gateway)"**
-   - To jest zazwyczaj domyślnie zaznaczone
+Po wybraniu **"OpenAPI"** w kroku 3.3, zobaczysz opcje importu:
 
-3. **Authorization type:**
-   - Wybierz **"RapidAPI"** z dropdown (domyślnie wybrane)
-   - To oznacza, że API będzie używać standardowej autoryzacji RapidAPI przez klucz API
-   - Alternatywnie możesz wybrać:
-     - **"OAuth2"** - jeśli wymagasz OAuth2
-     - **"Header"** - dla custom headers
-     - **"Basic Auth"** - dla Basic Authentication
-
-**Dla publicznego API (jak to):**
-- Wybierz **"RapidAPI"** - użytkownicy będą musieli mieć RapidAPI subscription key
-- To pozwoli na śledzenie użycia i zarządzanie dostępu
-
-### 3.5 Zapisanie i przejście dalej
-
-1. Kliknij przycisk **"Create"** lub **"Save"** na dole formularza
-2. Po utworzeniu aplikacji, RapidAPI przeniesie Cię do dashboardu aplikacji
-
-### 3.6 Importowanie OpenAPI Spec (Dodawanie endpointów)
-
-Teraz musisz dodać endpointy do utworzonej aplikacji:
-
-**Opcja A: Przez interfejs aplikacji**
-1. W dashboardzie aplikacji znajdź sekcję **"Endpoints"** lub **"Add Endpoints"**
-2. Kliknij **"Import from OpenAPI"** lub **"Add Endpoints"**
-3. Wybierz jedną z opcji poniżej
-
-**Opcja B: Upload pliku**
-
+**Opcja A: Upload pliku (Rekomendowane)**
 1. Kliknij **"Upload File"** lub **"Choose File"**
 2. Wybierz plik `openapi.yaml` z lokalnego komputera
-3. Kliknij **"Import"** lub **"Upload"**
+3. Plik zostanie automatycznie zaimportowany
 
-**Opcja C: Wklejenie URL**
-1. Jeśli plik jest dostępny publicznie, wklej URL:
+**Opcja B: Wklejenie URL**
+1. Jeśli plik jest dostępny publicznie (np. na GitHub), wklej URL:
    ```
    https://raw.githubusercontent.com/twoj-username/pl-id-validator-api/main/openapi.yaml
    ```
-2. Kliknij **"Import"**
+   **Uwaga:** Zamień `twoj-username` na swoje GitHub username
 
-**Opcja D: Wklejenie zawartości**
+**Opcja C: Wklejenie zawartości**
 1. Skopiuj zawartość pliku `openapi.yaml`
-2. Wklej do edytora tekstowego
-3. Kliknij **"Import"**
+2. Wklej do pola tekstowego (jeśli dostępne)
+3. Kliknij **"Import"** lub **"Validate"**
 
-**Uwaga:** Jeśli nie widzisz opcji importu OpenAPI bezpośrednio po utworzeniu aplikacji:
-- Przejdź do zakładki **"Endpoints"** w dashboardzie aplikacji
-- Tam powinieneś znaleźć opcję importu OpenAPI spec
+### 3.5 Utworzenie projektu
 
-### 3.7 Konfiguracja dodatkowa (po imporcie)
+1. Po wybraniu i zaimportowaniu OpenAPI spec, kliknij przycisk **"Add API Project"** (niebieski przycisk na dole)
+2. RapidAPI utworzy projekt i automatycznie zaimportuje wszystkie endpointy z OpenAPI spec
+3. Zostaniesz przekierowany do dashboardu projektu
 
-Po zaimportowaniu endpointów, możesz uzupełnić dodatkowe informacje w ustawieniach aplikacji:
-- **Category:** `Business` lub `Developer Tools`
-- **Tags:** `poland`, `validation`, `nip`, `regon`, `iban`
+### 3.6 Weryfikacja zaimportowanych endpointów
+
+Po utworzeniu projektu, sprawdź czy wszystkie endpointy zostały zaimportowane:
+- `GET /v1/health`
+- `POST /v1/normalize`
+- `POST /v1/validate/nip`
+- `POST /v1/validate/regon`
+- `POST /v1/validate/iban`
+
+**Jeśli endpointy nie zostały zaimportowane:**
+- Sprawdź czy plik OpenAPI jest poprawny (walidacja w Swagger Editor)
+- Możesz dodać endpointy ręcznie później w zakładce **"Endpoints"**
 
 ---
 
@@ -198,28 +182,30 @@ RapidAPI powinno automatycznie wykryć wszystkie endpointy z OpenAPI spec:
 ### 4.2 Konfiguracja Base URL
 
 **Gdzie znaleźć Base URL:**
-1. W dashboardzie aplikacji, przejdź do **"Settings"** lub **"Configuration"**
+1. W dashboardzie projektu API, przejdź do **"Settings"** lub **"Configuration"**
 2. Znajdź sekcję **"Base URL"** lub **"API Base URL"**
-3. Ustaw na URL Twojego wdrożenia:
+3. Ustaw na URL Twojego wdrożenia Railway:
    ```
    https://pl-id-validator-api-production.up.railway.app
    ```
 4. **Nie dodawaj** `/v1` na końcu - endpointy w OpenAPI już to zawierają
 
 **Alternatywnie:**
-- Jeśli importujesz OpenAPI spec, RapidAPI może automatycznie wykryć Base URL z sekcji `servers` w pliku
-- W takim przypadku upewnij się, że w `openapi.yaml` masz prawidłowy URL Railway
+- Jeśli importowałeś OpenAPI spec podczas tworzenia projektu, RapidAPI może automatycznie wykryć Base URL z sekcji `servers` w pliku
+- W takim przypadku upewnij się, że w `openapi.yaml` masz prawidłowy URL Railway (powinien być już ustawiony)
+- Jeśli Base URL został automatycznie wykryty, sprawdź czy jest poprawny
 
-### 4.3 Weryfikacja konfiguracji autoryzacji
+### 4.3 Konfiguracja autoryzacji
 
-**Sprawdź ustawienia autoryzacji:**
-1. W ustawieniach aplikacji znajdź sekcję **"Authorization"** lub **"Security"**
-2. Powinno być ustawione na **"RapidAPI"** (zgodnie z konfiguracją z kroku 3.4)
-3. To oznacza, że użytkownicy będą musieli używać RapidAPI subscription key
+**W RapidAPI Studio/Projects:**
+- Autoryzacja jest zazwyczaj konfigurowana na poziomie endpointów
+- Domyślnie endpointy używają standardowej autoryzacji RapidAPI (subscription key)
+- W ustawieniach projektu znajdź sekcję **"Authorization"** lub **"Security"** aby sprawdzić/zmienić ustawienia
 
-**Zmiana autoryzacji (jeśli potrzebna):**
-- Jeśli chcesz API bez autoryzacji: wybierz **"No Authentication"** lub **"Public"**
-- Dla większości przypadków, **"RapidAPI"** jest najlepszym wyborem - pozwala na śledzenie użycia i zarządzanie dostępem
+**Dla publicznego API:**
+- Użytkownicy będą musieli mieć RapidAPI subscription key do korzystania z API
+- To pozwala na śledzenie użycia i zarządzanie dostępem
+- Możesz skonfigurować różne poziomy dostępu (Free, Pro, Ultra) w ustawieniach projektu
 
 ---
 
