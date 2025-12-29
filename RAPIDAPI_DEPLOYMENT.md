@@ -245,26 +245,107 @@ Przetestuj każdy endpoint:
 
 ---
 
-## Krok 6: Konfiguracja zaawansowana
+## Krok 6: Konfiguracja monetizacji (Pricing & Rate Limits)
 
-### 6.1 Rate Limiting (opcjonalnie)
+### 6.1 Rekomendowane limity dla PL Validator API
 
-W ustawieniach API możesz skonfigurować:
-- **Free Tier:** np. 1000 requestów/miesiąc
-- **Pro Tier:** np. 10000 requestów/miesiąc
-- **Ultra Tier:** np. 100000 requestów/miesiąc
+Ponieważ to lekkie API walidacyjne (bez bazy danych, szybkie odpowiedzi), możesz ustawić wyższe limity:
 
-**Uwaga:** RapidAPI zarządza rate limitingiem automatycznie.
+#### **BASIC Plan (Free)**
+**Plan Type:** Monthly Subscription  
+**Subscription Price:** $0.00/month  
+**Rate Limit:** 1,000 requests/hour  
+**Quota Limit:** 10,000 requests/month  
+**Limit Type:** Soft Limit (po przekroczeniu można nadal używać)  
+**Overages:** $0.00 (bezpłatne przekroczenia, ale z limitem rate)
 
-### 6.2 Pricing (opcjonalnie)
+**Dlaczego 10,000?**
+- Wystarczające do testów i małych projektów
+- Około 330 requestów dziennie
+- Zachęca do upgrade'u dla większego użycia
 
-Jeśli chcesz zarabiać na API:
-1. Przejdź do sekcji **"Pricing"**
-2. Ustaw ceny dla różnych tierów:
-   - **Free:** $0 (ograniczona liczba requestów)
-   - **Pro:** $9.99/miesiąc
-   - **Ultra:** $49.99/miesiąc
-3. Ustaw limity requestów dla każdego tieru
+#### **PRO Plan**
+**Plan Type:** Monthly Subscription  
+**Subscription Price:** $9.99/month (lub $4.99 dla startu)  
+**Rate Limit:** 5,000 requests/hour  
+**Quota Limit:** 100,000 requests/month  
+**Limit Type:** Soft Limit  
+**Overages:** $0.01 per 1,000 extra requests (lub $0 dla początku)
+
+**Dlaczego 100,000?**
+- Dla małych biznesów i średnich projektów
+- Około 3,300 requestów dziennie
+- Dobra wartość dla płatnego planu
+
+#### **ULTRA Plan**
+**Plan Type:** Monthly Subscription  
+**Subscription Price:** $29.99/month  
+**Rate Limit:** 10,000 requests/hour  
+**Quota Limit:** 500,000 requests/month  
+**Limit Type:** Soft Limit  
+**Overages:** $0.005 per 1,000 extra requests
+
+**Dlaczego 500,000?**
+- Dla średnich biznesów z większym ruchem
+- Około 16,600 requestów dziennie
+- Wysoka wartość dla profesjonalnego użycia
+
+#### **MEGA Plan**
+**Plan Type:** Monthly Subscription  
+**Subscription Price:** $99.99/month  
+**Rate Limit:** 20,000 requests/hour  
+**Quota Limit:** 2,000,000 requests/month (lub Unlimited)  
+**Limit Type:** Soft Limit  
+**Overages:** $0.002 per 1,000 extra requests
+
+**Dlaczego 2,000,000?**
+- Dla dużych biznesów i enterprise
+- Około 66,600 requestów dziennie
+- Najwyższy tier z najlepszą wartością
+
+### 6.2 Konfiguracja w RapidAPI Studio
+
+1. Przejdź do zakładki **"Monetize"** w swoim projekcie API
+2. Przejdź do sub-tab **"Public Plans"**
+3. Dla każdego planu (BASIC, PRO, ULTRA, MEGA):
+   - Kliknij przycisk **"Edit"** na karcie planu
+   - Wypełnij ustawienia zgodnie z rekomendacjami powyżej
+   - Dla **Requests** (Object):
+     - Kliknij przycisk **"Quota"** lub **"+"**
+     - **Quota Type:** Monthly
+     - **Quota Limit:** zgodnie z wartościami powyżej
+     - **Limit Type:** Soft Limit (pozwala na przekroczenie z overages)
+     - **Overages:** ustaw zgodnie z rekomendacjami
+   - **Rate Limit:** ustaw w sekcji "Rate Limit" w głównym edytorze planu
+   - Kliknij **"Save Changes"**
+
+### 6.3 Dodatkowe obiekty (Opcjonalnie)
+
+Możesz dodać dodatkowe obiekty:
+- **Bandwidth Platform Fee:** zazwyczaj pozostaw domyślne (RapidAPI zarządza)
+- **Rapid-free-plans-hard-limit:** pozostaw domyślne dla free planów
+
+### 6.4 Features (Opcjonalnie)
+
+Możesz dodać features które różnicują plany:
+- **Priority Support** - dla PRO i wyżej
+- **Email Support** - dla ULTRA i wyżej
+- **SLA Guarantee** - dla MEGA
+
+### 6.5 Strategia cenowa
+
+**Dla startu (wersja Beta/Soft Launch):**
+- Wszystkie plany za $0.00 żeby zdobyć użytkowników
+- Ustaw limity zgodnie z rekomendacjami
+- Po zebraniu feedbacku i użytkowników, możesz zwiększyć ceny
+
+**Dla pełnego launchu:**
+- BASIC: $0.00 (zawsze darmowy dla przyciągnięcia użytkowników)
+- PRO: $9.99/month
+- ULTRA: $29.99/month  
+- MEGA: $99.99/month
+
+**Uwaga:** RapidAPI zarządza rate limitingiem i billingiem automatycznie.
 
 ### 6.3 Dokumentacja
 
