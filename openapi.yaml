@@ -4,7 +4,10 @@ info:
   version: 1.0.0
   description: Validate and normalize Polish identifiers (NIP, REGON) and IBAN (PL).
 servers:
-  - url: https://YOUR_PUBLIC_HOST
+  - url: http://localhost:8080
+    description: Local development server
+  - url: https://pl-id-validator-api-production.up.railway.app
+    description: Production server (Railway)
 paths:
   /:
     get:

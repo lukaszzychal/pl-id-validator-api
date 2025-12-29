@@ -60,15 +60,25 @@ curl https://pl-id-validator-api-production.up.railway.app/v1/health
 
 ### 2.1 Aktualizacja openapi.yaml
 
-Edytuj plik `openapi.yaml` i zaktualizuj URL serwera:
+Plik `openapi.yaml` już zawiera obie wersje serwerów (lokalną i produkcyjną):
 
 ```yaml
 servers:
+  - url: http://localhost:8080
+    description: Local development server
   - url: https://pl-id-validator-api-production.up.railway.app
-    description: Production server
+    description: Production server (Railway)
 ```
 
-**Uwaga:** Jeśli masz już plik `openapi.yaml` w repozytorium, sprawdź czy zawiera prawidłowy URL.
+**Dla wdrożenia na Railway:**
+- Jeśli Twój URL Railway jest inny, zaktualizuj drugi wpis w sekcji `servers`
+- Dla lokalnego testowania użyj pierwszego wpisu (`http://localhost:8080`)
+
+**Dla importu do RapidAPI:**
+- RapidAPI automatycznie użyje odpowiedniego URL w zależności od wybranego środowiska
+- Możesz też ustawić Base URL ręcznie w ustawieniach RapidAPI (patrz Krok 4.2)
+
+**Uwaga:** Jeśli masz własny URL Railway, zaktualizuj wartość w drugim wpisie.
 
 ### 2.2 Weryfikacja OpenAPI Spec
 
