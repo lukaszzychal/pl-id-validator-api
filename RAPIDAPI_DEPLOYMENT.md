@@ -450,9 +450,100 @@ Ponieważ to lekkie API walidacyjne (bez bazy danych, szybkie odpowiedzi), może
 **Limit Type:** Soft Limit (po przekroczeniu można nadal używać)  
 **Overages:** $0.00 (bezpłatne przekroczenia, ale z limitem rate)
 
+##### 📖 **Szczegółowe wyjaśnienie: Limit Type: Soft Limit**
+
+**Co to znaczy "Soft Limit":**
+
+**Soft Limit = Miękki limit** oznacza, że użytkownik **może przekroczyć** limit 10,000 requests/month bez otrzymania błędu.
+
+**Jak to działa w praktyce:**
+
+**Scenariusz 1: Użytkownik użył dokładnie 10,000 requests**
+```
+✅ Wszystko działa normalnie
+✅ API odpowiada bez błędów
+✅ Limit nie został przekroczony
+```
+
+**Scenariusz 2: Użytkownik użył 12,000 requests (przekroczenie o 2,000)**
+```
+✅ API nadal działa (nie dostaje błędu 429)
+✅ Użytkownik może dalej korzystać
+✅ Raport pokazuje użycie: 10,000 (z quota) + 2,000 (overages)
+```
+
+**Porównanie z Hard Limit:**
+```
+HARD LIMIT (gdyby był wybrany):
+❌ Po 10,000 requests → błąd 429 (Too Many Requests)
+❌ API przestaje działać
+❌ Użytkownik nie może używać do końca miesiąca
+❌ Nawet jeśli chciałby płacić, nie może
+```
+
+##### 💰 **Szczegółowe wyjaśnienie: Overages: $0.00**
+
+**Co to znaczy "Overages: $0.00":**
+
+**Overages = Dopłata** za każdy dodatkowy request **ponad** Quota Limit (10,000).
+
+**$0.00 = bezpłatne przekroczenia** - użytkownik nie płaci za dodatkowe requesty.
+
+**Jak to działa:**
+
+**Przykład dla BASIC planu:**
+```
+Użytkownik w ciągu miesiąca:
+- Quota Limit: 10,000 requests (bezpłatne, wliczone w plan)
+- Faktyczne użycie: 15,000 requests
+- Przekroczenie: 5,000 requests (15,000 - 10,000)
+
+Płatności:
+- Subscription: $0.00 (darmowy plan)
+- Overages: 5,000 × $0.00 = $0.00 (bezpłatne przekroczenia)
+- RAZEM: $0.00
+```
+
+**Dlaczego Rate Limit nadal działa:**
+
+Nawet przy Overages = $0.00, **Rate Limit (1,000 requests/hour) nadal obowiązuje**:
+
+```
+Scenariusz:
+Użytkownik chce szybko wykonać 5,000 requestów w ciągu godziny:
+
+❌ Rate Limit: 1,000 requests/hour
+❌ Po 1,000 requestach w godzinie → błąd 429
+❌ Musi poczekać do następnej godziny
+
+Ale w ciągu całego miesiąca:
+✅ Może użyć więcej niż 10,000 (Soft Limit)
+✅ Bez dodatkowych opłat (Overages = $0.00)
+✅ Ogranicza go tylko Rate Limit (max 1,000/hour)
+```
+
+**Przykład z czasem:**
+```
+Maksymalne możliwe użycie w miesiącu (przy Rate Limit 1,000/hour):
+- 1,000 requests/hour × 24 godziny = 24,000 requests/dzień
+- 24,000 requests/dzień × 30 dni = 720,000 requests/miesiąc (teoretycznie)
+
+Ale praktycznie:
+- Quota Limit: 10,000 requests (bezpłatne)
+- Overages: reszta również bezpłatna ($0.00)
+- Rate Limit: maksymalnie 1,000/hour (to ogranicza szybkość, nie całkowitą liczbę)
+```
+
+**Podsumowanie dla BASIC planu:**
+- ✅ **Soft Limit** = użytkownik może użyć więcej niż 10,000 requests
+- ✅ **Overages $0.00** = nie płaci za przekroczenia
+- ⚠️ **Rate Limit 1,000/hour** = ogranicza szybkość (max 1,000 requestów na godzinę)
+- 💡 **Cel:** Zachęcić użytkowników do testowania, ale powoli zachęcić do upgrade'u przez Rate Limit
+
 **Dlaczego 10,000?**
 - Wystarczające do testów i małych projektów
-- Około 330 requestów dziennie
+- Około 330 requestów dziennie (przy równomiernym użyciu)
+- Przy Rate Limit 1,000/hour może teoretycznie użyć więcej, ale praktycznie Rate Limit ogranicza
 - Zachęca do upgrade'u dla większego użycia
 
 #### **PRO Plan**
