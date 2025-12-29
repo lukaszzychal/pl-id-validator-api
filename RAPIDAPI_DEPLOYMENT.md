@@ -737,12 +737,13 @@ Rate Limit: 20,000 requests per hour
 
 | Plan | Subscription Price | Rate Limit | Quota Limit | Overages | Recommended | Features |
 |------|-------------------|------------|-------------|----------|-------------|----------|
-| **BASIC** | $0.00 | 1,000/hour | 10,000/month | $0.00 | ❌ | Brak |
-| **PRO** | $0.00* | 5,000/hour | 100,000/month | $0.00* | ✅ TAK | Email Support |
-| **ULTRA** | $0.00* | 10,000/hour | 500,000/month | $0.00* | ❌ | Email + Priority |
-| **MEGA** | $0.00* | 20,000/hour | 2,000,000/month | $0.00* | ❌ | Wszystkie |
+| **BASIC** | $0.00 | 1,000/hour | 10,000/month | $0.00003* | ❌ | Brak |
+| **PRO** | $0.00** | 5,000/hour | 100,000/month | $0.00003* | ✅ TAK | Email Support |
+| **ULTRA** | $0.00** | 10,000/hour | 500,000/month | $0.00003* | ❌ | Email + Priority |
+| **MEGA** | $0.00** | 20,000/hour | 2,000,000/month | $0.00003* | ❌ | Wszystkie |
 
-*Dla startu ustaw $0.00, później zmień na: PRO=$9.99, ULTRA=$29.99, MEGA=$99.99
+*Overages: $0.00003 = minimum wymagane przez RapidAPI (nie można ustawić mniej) - praktycznie symboliczna opłata ($0.03 za 1,000 extra requests)  
+**Subscription Price dla startu: $0.00, później: PRO=$9.99, ULTRA=$29.99, MEGA=$99.99
 
 ---
 
