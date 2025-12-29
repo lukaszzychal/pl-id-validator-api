@@ -413,26 +413,57 @@ Poniżej znajdziesz **pełne rekomendacje** z wyjaśnieniem każdego pola i wart
 - Cena za każdy dodatkowy request po przekroczeniu Quota Limit
 - Działa tylko z Soft Limit
 
+**⚠️ WAŻNE - Minimalna wartość:**
+- RapidAPI wymaga **minimum $0.00003 per request** dla overages
+- Nie możesz ustawić `0` lub wartości mniejszej niż `0.00003`
+- Jeśli chcesz "prawie darmowe" overages, użyj minimalnej wartości: `0.00003`
+
 **Jak obliczyć:**
 - Jeśli chcesz $0.01 za 1,000 dodatkowych requestów:
   - $0.01 ÷ 1,000 = $0.00001 per request
+  - **ALE:** Musisz użyć minimum `0.00003` (RapidAPI requirement)
+- Jeśli chcesz $0.03 za 1,000 dodatkowych requestów:
+  - $0.03 ÷ 1,000 = $0.00003 per request ✓ (to jest minimum)
 - Jeśli chcesz $0.005 za 1,000 dodatkowych requestów:
   - $0.005 ÷ 1,000 = $0.000005 per request
+  - **Musisz użyć minimum:** `0.00003` (nie możesz mniej)
 
 **Wartość do wpisania:**
-- Wpisz w formacie: `0.00001` (nie `$0.00001`)
-- Dla bezpłatnych overages: `0`
+- Wpisz w formacie: `0.00003` (minimum) lub wyższe
+- **NIE możesz wpisać:** `0` ani wartości mniejszej niż `0.00003`
+- Format: `0.00003` (nie `$0.00003`, bez znaku dolara)
 
-**Przykład kalkulacji:**
+**Co oznacza $0.00003 per request:**
+- Za 1,000 dodatkowych requestów: 1,000 × $0.00003 = **$0.03**
+- Za 10,000 dodatkowych requestów: 10,000 × $0.00003 = **$0.30**
+- To jest bardzo niska cena - praktycznie symboliczna
+
+**Przykład kalkulacji dla BASIC planu:**
+```
+Użytkownik na planie BASIC:
+- Quota: 10,000 requests/month (bezpłatne)
+- Użył: 15,000 requests
+- Extra: 5,000 requests
+- Overages: 5,000 × $0.00003 = $0.15 dodatkowej opłaty
+- Subscription: $0.00
+- RAZEM: $0.15 za miesiąc (bardzo tanio!)
+```
+
+**Przykład kalkulacji dla PRO planu:**
 ```
 Użytkownik na planie PRO:
 - Quota: 100,000 requests/month
 - Użył: 120,000 requests
 - Extra: 20,000 requests
-- Overages: 20,000 × $0.00001 = $0.20 dodatkowej opłaty
+- Overages: 20,000 × $0.00003 = $0.60 dodatkowej opłaty
+- Subscription: $9.99
+- RAZEM: $10.59 za miesiąc
 ```
 
-**Rekomendacja dla startu:** Ustaw `0` (bezpłatne overages) żeby zachęcić użytkowników.
+**Rekomendacja dla startu:** 
+- Użyj minimalnej wartości `0.00003` dla wszystkich planów
+- To jest praktycznie symboliczna opłata (np. $0.03 za 1,000 extra requests)
+- Wciąż zachęca użytkowników, ale RapidAPI wymaga minimum tej wartości
 
 ---
 
@@ -448,7 +479,7 @@ Ponieważ to lekkie API walidacyjne (bez bazy danych, szybkie odpowiedzi), może
 **Rate Limit:** 1,000 requests/hour  
 **Quota Limit:** 10,000 requests/month  
 **Limit Type:** Soft Limit (po przekroczeniu można nadal używać)  
-**Overages:** $0.00 (bezpłatne przekroczenia, ale z limitem rate)
+**Overages:** $0.00003 per request (minimalna wartość wymagana przez RapidAPI - praktycznie symboliczna)
 
 ##### 📖 **Szczegółowe wyjaśnienie: Limit Type: Soft Limit**
 
@@ -481,13 +512,15 @@ HARD LIMIT (gdyby był wybrany):
 ❌ Nawet jeśli chciałby płacić, nie może
 ```
 
-##### 💰 **Szczegółowe wyjaśnienie: Overages: $0.00**
+##### 💰 **Szczegółowe wyjaśnienie: Overages: $0.00003**
 
-**Co to znaczy "Overages: $0.00":**
+**Co to znaczy "Overages: $0.00003":**
 
 **Overages = Dopłata** za każdy dodatkowy request **ponad** Quota Limit (10,000).
 
-**$0.00 = bezpłatne przekroczenia** - użytkownik nie płaci za dodatkowe requesty.
+**$0.00003 = minimalna wartość wymagana przez RapidAPI** - praktycznie symboliczna opłata (nie można ustawić $0.00).
+
+**⚠️ Ważne:** RapidAPI wymaga minimum $0.00003 per request - nie możesz ustawić $0.00.
 
 **Jak to działa:**
 
@@ -500,13 +533,13 @@ Użytkownik w ciągu miesiąca:
 
 Płatności:
 - Subscription: $0.00 (darmowy plan)
-- Overages: 5,000 × $0.00 = $0.00 (bezpłatne przekroczenia)
-- RAZEM: $0.00
+- Overages: 5,000 × $0.00003 = $0.15 (symboliczna opłata)
+- RAZEM: $0.15 (bardzo tanio - praktycznie darmowe)
 ```
 
 **Dlaczego Rate Limit nadal działa:**
 
-Nawet przy Overages = $0.00, **Rate Limit (1,000 requests/hour) nadal obowiązuje**:
+Nawet przy niskich Overages ($0.00003), **Rate Limit (1,000 requests/hour) nadal obowiązuje**:
 
 ```
 Scenariusz:
@@ -518,7 +551,7 @@ Użytkownik chce szybko wykonać 5,000 requestów w ciągu godziny:
 
 Ale w ciągu całego miesiąca:
 ✅ Może użyć więcej niż 10,000 (Soft Limit)
-✅ Bez dodatkowych opłat (Overages = $0.00)
+✅ Bardzo niska opłata (Overages = $0.00003 per request - praktycznie symboliczna)
 ✅ Ogranicza go tylko Rate Limit (max 1,000/hour)
 ```
 
@@ -530,15 +563,16 @@ Maksymalne możliwe użycie w miesiącu (przy Rate Limit 1,000/hour):
 
 Ale praktycznie:
 - Quota Limit: 10,000 requests (bezpłatne)
-- Overages: reszta również bezpłatna ($0.00)
+- Overages: reszta z symboliczną opłatą ($0.00003 per request - minimum wymagane)
 - Rate Limit: maksymalnie 1,000/hour (to ogranicza szybkość, nie całkowitą liczbę)
 ```
 
 **Podsumowanie dla BASIC planu:**
 - ✅ **Soft Limit** = użytkownik może użyć więcej niż 10,000 requests
-- ✅ **Overages $0.00** = nie płaci za przekroczenia
+- ✅ **Overages $0.00003** = symboliczna opłata (minimum wymagane przez RapidAPI)
+  - Przykład: 5,000 extra requests = $0.15 (bardzo tanio)
 - ⚠️ **Rate Limit 1,000/hour** = ogranicza szybkość (max 1,000 requestów na godzinę)
-- 💡 **Cel:** Zachęcić użytkowników do testowania, ale powoli zachęcić do upgrade'u przez Rate Limit
+- 💡 **Cel:** Zachęcić użytkowników do testowania, praktycznie darmowy plan z symbolicznymi overages
 
 **Dlaczego 10,000?**
 - Wystarczające do testów i małych projektów
@@ -552,7 +586,7 @@ Ale praktycznie:
 **Rate Limit:** 5,000 requests/hour  
 **Quota Limit:** 100,000 requests/month  
 **Limit Type:** Soft Limit  
-**Overages:** $0.01 per 1,000 extra requests (lub $0 dla początku)
+**Overages:** $0.00003 per request (minimum wymagane przez RapidAPI - praktycznie symboliczna opłata)
 
 **Dlaczego 100,000?**
 - Dla małych biznesów i średnich projektów
@@ -565,7 +599,7 @@ Ale praktycznie:
 **Rate Limit:** 10,000 requests/hour  
 **Quota Limit:** 500,000 requests/month  
 **Limit Type:** Soft Limit  
-**Overages:** $0.005 per 1,000 extra requests
+**Overages:** $0.00003 per request (minimum wymagane przez RapidAPI - praktycznie symboliczna opłata)
 
 **Dlaczego 500,000?**
 - Dla średnich biznesów z większym ruchem
@@ -578,7 +612,7 @@ Ale praktycznie:
 **Rate Limit:** 20,000 requests/hour  
 **Quota Limit:** 2,000,000 requests/month (lub Unlimited)  
 **Limit Type:** Soft Limit  
-**Overages:** $0.002 per 1,000 extra requests
+**Overages:** $0.00003 per request (minimum wymagane przez RapidAPI - praktycznie symboliczna opłata)
 
 **Dlaczego 2,000,000?**
 - Dla dużych biznesów i enterprise
@@ -600,7 +634,7 @@ Ale praktycznie:
 - **Quota Type:** Monthly ✓
 - **Quota Limit:** `10000` (10,000)
 - **Limit Type:** Soft Limit ✓
-- **Overages:** `0` ($0.00 per extra request)
+- **Overages:** `0.00003` (minimum wymagane przez RapidAPI - $0.00003 per extra request)
 - Kliknij **"Save Changes"**
 
 ---
@@ -618,10 +652,10 @@ Ale praktycznie:
 - **Quota Type:** Monthly ✓
 - **Quota Limit:** `100000` (100,000)
 - **Limit Type:** Soft Limit ✓
-- **Overages:** `0` (lub `0.00001` dla $0.01 per 1,000 extra)
+- **Overages:** `0.00003` (minimum wymagane przez RapidAPI) lub `0.00001` dla $0.01 per 1,000 extra (ale minimum to 0.00003, więc użyj tej wartości)
 - Kliknij **"Save Changes"**
 
-**Uwaga:** `0.00001` = $0.01 za 1,000 dodatkowych requestów
+**Uwaga:** RapidAPI wymaga minimum `0.00003`. Jeśli chcesz $0.01/1k, musisz użyć minimum `0.00003` (będzie trochę drożej).
 
 ---
 
@@ -638,10 +672,10 @@ Ale praktycznie:
 - **Quota Type:** Monthly ✓
 - **Quota Limit:** `500000` (500,000)
 - **Limit Type:** Soft Limit ✓
-- **Overages:** `0` (lub `0.000005` dla $0.005 per 1,000 extra)
+- **Overages:** `0.00003` (minimum wymagane przez RapidAPI)
 - Kliknij **"Save Changes"**
 
-**Uwaga:** `0.000005` = $0.005 za 1,000 dodatkowych requestów
+**Uwaga:** RapidAPI wymaga minimum `0.00003`. Nie można użyć mniejszej wartości niż $0.00003 per request.
 
 ---
 
@@ -658,10 +692,10 @@ Ale praktycznie:
 - **Quota Type:** Monthly ✓
 - **Quota Limit:** `2000000` (2,000,000) lub pozostaw puste dla Unlimited
 - **Limit Type:** Soft Limit ✓
-- **Overages:** `0` (lub `0.000002` dla $0.002 per 1,000 extra)
+- **Overages:** `0.00003` (minimum wymagane przez RapidAPI)
 - Kliknij **"Save Changes"**
 
-**Uwaga:** `0.000002` = $0.002 za 1,000 dodatkowych requestów
+**Uwaga:** RapidAPI wymaga minimum `0.00003`. Nie można użyć mniejszej wartości niż $0.00003 per request.
 
 ---
 
@@ -670,30 +704,32 @@ Ale praktycznie:
 **BASIC:**
 ```
 Quota Limit: 10000
-Overages: 0
+Overages: 0.00003 (minimum wymagane przez RapidAPI)
 Rate Limit: 1,000 requests per hour
 ```
 
 **PRO:**
 ```
 Quota Limit: 100000
-Overages: 0 (lub 0.00001)
+Overages: 0.00003 (minimum wymagane przez RapidAPI)
 Rate Limit: 5,000 requests per hour
 ```
 
 **ULTRA:**
 ```
 Quota Limit: 500000
-Overages: 0 (lub 0.000005)
+Overages: 0.00003 (minimum wymagane przez RapidAPI)
 Rate Limit: 10,000 requests per hour
 ```
 
 **MEGA:**
 ```
 Quota Limit: 2000000
-Overages: 0 (lub 0.000002)
+Overages: 0.00003 (minimum wymagane przez RapidAPI)
 Rate Limit: 20,000 requests per hour
 ```
+
+**⚠️ Ważne:** RapidAPI wymaga minimum `0.00003` dla overages. Nie można ustawić `0` ani wartości mniejszej.
 
 ---
 
@@ -728,7 +764,7 @@ Recommended Plan: ☐ (niezaznaczone)
 Quota Type: Monthly ✓
 Quota Limit: 10000
 Limit Type: Soft Limit ✓
-Overages: 0
+Overages: 0.00003 (minimum wymagane przez RapidAPI)
 ```
 
 **Features:** Brak
@@ -751,7 +787,7 @@ Recommended Plan: ☑ (ZAZNACZONE - to jest rekomendowany plan)
 Quota Type: Monthly ✓
 Quota Limit: 100000
 Limit Type: Soft Limit ✓
-Overages: 0 (lub 0.00001 dla $0.01/1k extra)
+Overages: 0.00003 (minimum wymagane przez RapidAPI)
 ```
 
 **Features:**
@@ -775,7 +811,7 @@ Recommended Plan: ☐ (niezaznaczone - PRO jest recommended)
 Quota Type: Monthly ✓
 Quota Limit: 500000
 Limit Type: Soft Limit ✓
-Overages: 0 (lub 0.000005 dla $0.005/1k extra)
+Overages: 0.00003 (minimum wymagane przez RapidAPI)
 ```
 
 **Features:**
@@ -800,7 +836,7 @@ Recommended Plan: ☐ (niezaznaczone)
 Quota Type: Monthly ✓
 Quota Limit: 2000000 (lub pozostaw puste dla Unlimited)
 Limit Type: Soft Limit ✓
-Overages: 0 (lub 0.000002 dla $0.002/1k extra)
+Overages: 0.00003 (minimum wymagane przez RapidAPI)
 ```
 
 **Features:**
@@ -814,10 +850,10 @@ Overages: 0 (lub 0.000002 dla $0.002/1k extra)
 ### 💡 **Strategia cenowa - Dla startu vs Pełny launch**
 
 #### **Wersja Beta/Soft Launch (Start):**
-- Wszystkie plany za **$0.00**
-- Overages na **$0.00**
+- Wszystkie plany za **$0.00** (subscription price)
+- Overages na **$0.00003** (minimum wymagane przez RapidAPI - praktycznie symboliczna opłata)
 - Cel: Zbierać użytkowników i feedback
-- Po 1-3 miesiącach dodaj ceny
+- Po 1-3 miesiącach dodaj ceny subskrypcji
 
 #### **Pełny Launch (Production):**
 - **BASIC:** $0.00 (zawsze darmowy)
