@@ -913,44 +913,95 @@ Użytkownik na planie PRO (100,000 requests/month):
 #### **Bandwidth Platform Fee (Opłata za przepustowość)**
 
 **Co to jest:**
-- **Bandwidth** = ilość danych przesyłanych między klientem a API
-- Mierzone w megabajtach (MB) lub gigabajtach (GB)
+- **Bandwidth** = ilość danych przesyłanych między klientem a API przez platformę RapidAPI
+- Mierzone w megabajtach (MB)
 - Każda odpowiedź API zawiera dane - to kosztuje przepustowość
 
-**Jak działa:**
-- RapidAPI mierzy ilość danych przesyłanych przez ich platformę
-- 1 jednostka = 1 MB danych
-- Po przekroczeniu limitu, naliczane są overages
+**Co oznacza "10,240 / month Quota then $0.001 each":**
 
-**Dla PL Validator API:**
-- Odpowiedzi są małe (kilkaset bajtów JSON)
-- Przykład odpowiedzi: `{"valid":true,"normalized":"1234563218"}` = ~50 bajtów
-- 1 MB = ~20,000 takich odpowiedzi
-- **Dlatego:** Dla tego API, bandwidth zwykle nie jest problemem
+**10,240 / month Quota:**
+- To jest **10,240 MB (megabajtów) miesięcznie** = **10 GB**
+- To jest limit wliczony w plan (bezpłatny)
+- 10,240 MB = 10 × 1,024 MB = 10 GB
 
-**Przykład kalkulacji:**
+**then $0.001 each:**
+- Po przekroczeniu 10,240 MB, użytkownik płaci **$0.001 za każdy dodatkowy MB**
+- Przykład: Jeśli użył 10,250 MB:
+  - 10,240 MB = bezpłatne (quota)
+  - 10 MB extra = 10 × $0.001 = **$0.01** dodatkowej opłaty
+
+**Jak działa w praktyce:**
+
+**Dla PL Validator API z małymi odpowiedziami JSON:**
 ```
-Request do API:
-- Request body: ~30 bajtów JSON
-- Response: ~50 bajtów JSON
-- RAZEM: ~80 bajtów = 0.00008 MB
+Każde wywołanie API:
+- Request body: ~30 bajtów JSON (np. {"value":"123-456-32-18"})
+- Response: ~50 bajtów JSON (np. {"valid":true,"normalized":"1234563218"})
+- RAZEM na request: ~80 bajtów = 0.00008 MB
 
 Aby zużyć 1 MB:
-- Potrzebne: 1 MB / 0.00008 MB = 12,500 requests
+- Potrzebne: 1 MB ÷ 0.00008 MB = 12,500 requests
 
-Aby zużyć 10 GB (10,240 MB):
-- Potrzebne: 10,240 MB / 0.00008 MB = 128,000,000 requests
+Aby zużyć 10,240 MB (quota):
+- Potrzebne: 10,240 MB ÷ 0.00008 MB = 128,000,000 requests
+- To jest 128 MILIONÓW requestów!
+
+Nawet dla planu MEGA (2 miliony requests/month):
+- 2,000,000 requests × 0.00008 MB = 160 MB
+- To tylko 1.56% z 10,240 MB quota
+- **Praktycznie niemożliwe przekroczenie bandwidth!**
 ```
 
-**Domyślne ustawienia:**
-- RapidAPI często ustawia domyślne limity bandwidth
-- Dla free planów: zazwyczaj 10 GB/month
-- Dla płatnych: wyższe limity lub unlimited
+**Przykłady kalkulacji:**
 
-**Czy zmieniać ustawienia?**
-- **Zazwyczaj NIE** - pozostaw domyślne ustawienia RapidAPI
-- Bandwidth dla małych odpowiedzi JSON nie jest problemem
+**Scenariusz 1: BASIC plan - maksymalne użycie**
+```
+Quota Requests: 10,000 requests/month
+Faktyczne użycie: 10,000 requests
+
+Bandwidth użyte:
+- 10,000 requests × 0.00008 MB = 0.8 MB
+- Quota bandwidth: 10,240 MB
+- Użyte: 0.8 MB (0.008% quota)
+- Opłata za bandwidth: $0.00 (w granicach quota)
+```
+
+**Scenariusz 2: PRO plan - duże użycie**
+```
+Quota Requests: 100,000 requests/month
+Faktyczne użycie: 100,000 requests
+
+Bandwidth użyte:
+- 100,000 requests × 0.00008 MB = 8 MB
+- Quota bandwidth: 10,240 MB
+- Użyte: 8 MB (0.08% quota)
+- Opłata za bandwidth: $0.00 (w granicach quota)
+```
+
+**Scenariusz 3: Teoretyczne przekroczenie (bardzo mało prawdopodobne)**
+```
+Jeśli użytkownik użyłby 200,000,000 requests (200 milionów!):
+Bandwidth użyte:
+- 200,000,000 × 0.00008 MB = 16,000 MB = 16 GB
+- Quota: 10,240 MB
+- Przekroczenie: 16,000 - 10,240 = 5,760 MB
+- Opłata: 5,760 MB × $0.001 = $5.76
+
+Ale to wymagałoby 200 MILIONÓW requestów, co jest niemożliwe przy Rate Limits!
+```
+
+**Czy zmieniać ustawienia Bandwidth Platform Fee?**
+
+**❌ NIE - pozostaw domyślne ustawienia:**
+- Dla PL Validator API z małymi odpowiedziami JSON, bandwidth **praktycznie nigdy** nie będzie problemem
+- Odpowiedzi są bardzo małe (~80 bajtów na request)
+- Nawet przy maksymalnym użyciu requestów, bandwidth będzie w granicach quota
 - Skup się na limitach **Requests**, nie Bandwidth
+
+**Podsumowanie:**
+- **10,240 MB/month** = 10 GB bezpłatnego transferu danych
+- **$0.001 per MB** = dopłata za każdy MB ponad limit (ale dla tego API praktycznie nie będzie potrzebne)
+- Dla PL Validator API to ustawienie jest **odpowiednie** i można je pozostawić bez zmian
 
 ---
 
